@@ -3,6 +3,7 @@
 # カタンの開拓者たち
 # ゲームボード・クラスの実装
 
+from operator import index
 from string import *
 import numpy as np
 from hexTile import *
@@ -373,6 +374,11 @@ class catanBoard(hexTile, Vertex):
                 robberHexDict[indx] = hex_tile
 
         return robberHexDict
+
+    def get_robber(self):
+        for indx, hex_tile in self.hexTileDict.items():
+            if(hex_tile.robber == True):
+                return indx
 
     # Get a Dict of players to rob based on the hexIndex of the robber, with the circle Rect as the value（RobberのhexIndexを元に、サークルRectを値として、強盗するプレイヤーのDictを取得する）
     def get_players_to_rob(self, hexIndex):

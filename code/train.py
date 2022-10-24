@@ -9,7 +9,7 @@ from gameView import *
 from player import *
 from heuristicAIPlayer import *
 from env_catan import *
-from setting import *
+import setting
 import queue
 import numpy as np
 import sys
@@ -27,9 +27,9 @@ time_start = time.perf_counter()
 
 checkpoint_callback = CheckpointCallback(
 
-    save_freq=settings.default_save_freq, save_path="./save_weights_police/")
+    save_freq=setting.default_save_freq, save_path="./save_weights_police/")
 
-model.learn(total_timesteps=settings.default_total_timesteps,
+model.learn(total_timesteps=setting.default_total_timesteps,
 
             callback=checkpoint_callback)
 
