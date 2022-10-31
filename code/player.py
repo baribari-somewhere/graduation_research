@@ -55,6 +55,12 @@ class player():
         # Check if player has resources available(プレイヤーにリソースがあるかどうか確認する)
         if(self.resources['BRICK'] > 0 and self.resources['WOOD'] > 0):
             if(self.roadsLeft > 0):  # Check if player has roads left(プレイヤーにロードが残っているか確認する)
+                # 道を作る際にv1の方の数字を必ず小さくする
+                if(v1 > v2):
+                    x = v1
+                    v1 = v2
+                    v2 = x
+
                 self.buildGraph['ROADS'].append((v1, v2))
                 self.roadsLeft -= 1
 

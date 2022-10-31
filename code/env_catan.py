@@ -28,6 +28,7 @@ class Env_Catan(gym.Env):
         self.maxPoints = 10
         self.numPlayers = 4
         self.team_V = False
+        self.turn_count = 0
 
         # self.myAI=myAI("player1")
         # self.
@@ -46,8 +47,8 @@ class Env_Catan(gym.Env):
         # Initialize boardview object（ボードビューオブジェクトの初期化）
         self.boardView = catanGameView(self.board, self)
 
-        self.resources = {'ORE': 0, 'BRICK': 4,
-                          'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
+        # self.resources = {'ORE': 0, 'BRICK': 4,
+        #                   'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
 
         # Functiont to go through initial set up（初期セットアップを行うための関数）
         self.build_initial_settlements()
@@ -119,12 +120,16 @@ class Env_Catan(gym.Env):
         self.action_space = gym.spaces.Discrete(ACTION_NUM)
         self.observation_space = spaces.flatten_space(self.OBSERVATION_SPACE())
 
-    def step(self, action_index: int, board):
+    # def step(self, action_index: int, board):
+
+    def step(self, action_index: int):
         action = self.ACTION_MAP[action_index]
         done = False
         reward = 0
+        #numTurns = 0
 
         for currPlayer in self.playerQueue.queue:
+            self.turn_count += 1
             diceNum = self.rollDice()
             diceRolled = True
             self.update_playerResources(diceNum, currPlayer)
@@ -135,52 +140,54 @@ class Env_Catan(gym.Env):
             currPlayer.devCardPlayedThisTurn = False
 
             if(currPlayer == 'player1'):
-                new_settlement = np.array()
-                new_city = np.array()
-                new_road = np.array()
+                # new_settlement = np.array([])
+                # new_city = np.array([])
+                # new_road = np.array([])
                 while(self.change == False):
                     # 街道建設を選択した際にランダムに建設してる
                     if(action == "road"):
                         # a = a
-                        if(self.resources['BRICK'] > 0 and self.resources['WOOD'] > 0):
-                            possibleRoads = board.get_setup_roads(self)
+                        if(currPlayer.resources['BRICK'] > 0 and currPlayer.resources['WOOD'] > 0):
+                            possibleRoads = self.board.get_setup_roads(self)
                             randomEdge = np.random.randint(
                                 0, len(possibleRoads.keys()))
                             currPlayer.build_road(list(possibleRoads.keys())[randomEdge][0], list(
-                                possibleRoads.keys())[randomEdge][1], board)
-                            new_road = np.append(list(possibleRoads.keys())[randomEdge][0], list(
-                                possibleRoads.keys())[randomEdge][1])
+                                possibleRoads.keys())[randomEdge][1], self.board)
+                            # new_road = np.append(new_road, list(possibleRoads.keys())[randomEdge][0], list(
+                            #     possibleRoads.keys())[randomEdge][1])
                             reward += 1
                     elif(action == "settlement"):
                         #a = a
                         # vCoord = 0
                         # self.build_settlement(vCoord, board)
-                        possibleVertices = board.get_potential_settlements(
+                        possibleVertices = self.board.get_potential_settlements(
                             self)
-                        if(possibleVertices != {} and (self.resources['BRICK'] > 0 and self.resources['WOOD'] > 0 and self.resources['SHEEP'] > 0 and self.resources['WHEAT'] > 0)):
+                        if(possibleVertices != {} and (currPlayer.resources['BRICK'] > 0 and currPlayer.resources['WOOD'] > 0 and self.resources['SHEEP'] > 0 and self.resources['WHEAT'] > 0)):
                             randomVertex = np.random.randint(
                                 0, len(possibleVertices.keys()))
                             currPlayer.build_settlement(list(possibleVertices.keys())[
-                                randomVertex], board)
-                            new_settlement = np.append(randomVertex)
+                                randomVertex], self.board)
+                            # new_settlement = np.append(
+                            #     new_settlement, randomVertex)
                             reward += 3
 
                     elif(action == "city"):
                         #a = a
                         # vCoord = 0
                         # self.build_city(vCoord, board)
-                        possibleVertices = board.get_potential_cities(self)
-                        if(possibleVertices != {} and (self.resources['WHEAT'] >= 2 and self.resources['ORE'] >= 3)):
+                        possibleVertices = self.board.get_potential_cities(
+                            self)
+                        if(possibleVertices != {} and (currPlayer.resources['WHEAT'] >= 2 and currPlayer.resources['ORE'] >= 3)):
                             randomVertex = np.random.randint(
                                 0, len(possibleVertices.keys()))
                             currPlayer.build_city(list(possibleVertices.keys())[
-                                randomVertex], board)
-                            new_city = np.append(randomVertex)
+                                randomVertex], self.board)
+                            # new_city = np.append(new_city, randomVertex)
                             reward += 5
 
                     elif(action == "dev"):
                         #a = a
-                        currPlayer.draw_devCard(board)
+                        currPlayer.draw_devCard(self.board)
 
                     elif(action == "use_dv"):
                         #a = a
@@ -188,10 +195,10 @@ class Env_Catan(gym.Env):
 
                     elif(action == "trade"):
                         #a = a
-                        for r1, r1_amount in self.resources.items():
+                        for r1, r1_amount in currPlayer.resources.items():
                             # heuristic to trade if a player has more than 5 of a particular resource（プレイヤーが特定のリソースを5つ以上持っている場合のヒューリスティックトレード）
                             if(r1_amount >= 6):
-                                for r2, r2_amount in self.resources.items():
+                                for r2, r2_amount in currPlayer.resources.items():
                                     if(r2_amount < 1):
                                         self.trade_with_bank(r1, r2)
                                         break
@@ -206,11 +213,23 @@ class Env_Catan(gym.Env):
                 reward += 20
                 Over_Flag = True
                 p_v = currPlayer.name
+
+                p_team = self.check_team(currPlayer)
+                self.gameOver = True
+                self.turnOver = True
+                print("====================================================")
+                print(f"WINNER {currPlayer.name}")
+                print("{} & {} WINS IN {} TURNS!".format(
+                    p_v, p_team, int(self.turn_count)))
+                print(self.diceStats)
+                print("Exiting game in 10 seconds...")
+                pygame.time.delay(50000)
+
                 done = True
 
             # 辞書順board_resources,city,have_develop,have_resources,road,
             # robber_resources,settlement
-            observation = np.array()
+            observation = np.array([])
 
             # どのマスにどの資源が設定されているか
             resource_list = self.check_board_resources(
@@ -225,14 +244,21 @@ class Env_Catan(gym.Env):
             # なんの資源を持っているか
             my_resource = self.check_have_resources()
 
-            # 新しい開拓地→new_settlement
+            settle_city = self.set_thing()
+            road = self.get_road()
 
-            # 新しい都市→new_city
+            # observation = np.append(observation, np.array([resource_list, new_city, dev_list,
+            #                         my_resource, new_road, robber_position, new_settlement]))
 
-            # 新しい道→new_road
+            # observation = np.append(observation, np.array([my_resource, dev_list,
+            #                          road, robber_position, set&city]))
 
-            observation = np.append(observation, [resource_list, new_city, dev_list,
-                                    my_resource, new_road, robber_position, new_settlement])
+            #observation = np.append(observation, np.array([resource_list]))
+            observation = np.append(observation, np.array([my_resource]))
+            observation = np.append(observation, np.array([dev_list]))
+            observation = np.append(observation, np.array([road]))
+            observation = np.append(observation, np.array([robber_position]))
+            observation = np.append(observation, np.array([settle_city]))
 
             # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
 
@@ -240,12 +266,15 @@ class Env_Catan(gym.Env):
 
     def reset(self):
 
+        self.board = catanBoard()
+
         # Game State variables(ゲームステート変数)
         self.gameOver = False
         self.maxPoints = 10
         self.numPlayers = 4
         self.team_V = False
         self.change = False
+        self.turn_count = 0
 
         # Dictionary to keep track of dice statistics（サイコロの統計情報を記録する辞書）
         self.diceStats = {2: 0, 3: 0, 4: 0, 5: 0, 6: 0,
@@ -270,8 +299,8 @@ class Env_Catan(gym.Env):
         # Initialize boardview object（ボードビューオブジェクトの初期化）
         self.boardView = catanGameView(self.board, self)
 
-        self.resources = {'ORE': 0, 'BRICK': 4,
-                          'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
+        # self.resources = {'ORE': 0, 'BRICK': 4,
+        #                   'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
 
         # Functiont to go through initial set up（初期セットアップを行うための関数）
         self.build_initial_settlements()
@@ -282,8 +311,8 @@ class Env_Catan(gym.Env):
         resource_list = self.check_board_resources(
             self.board.resourcesList)
 
-        # 発展カード
-        dev_list = np.array([])
+       # 発展カード
+        #dev_list = self.get_DV(currPlayer)
 
         # 盗賊がどこにいるか
         robber_position = self.board.get_robber()
@@ -291,14 +320,24 @@ class Env_Catan(gym.Env):
         # なんの資源を持っているか
         my_resource = self.check_have_resources()
 
-        # 新しい開拓地→new_settlement
+        settle_city = self.set_thing()
+        road = self.get_road()
 
-        # 新しい都市→new_city
+        # observation = np.append(observation, np.array([resource_list, np.array([1]), dev_list,
+        #                         my_resource, np.array([1]), robber_position, np.array([1])]))
 
-        # 新しい道→new_road
+        #observation = np.append(observation, np.array([resource_list]))
+        # observation = np.append(observation, np.array(np.zeros(20)))
+        # observation = np.append(observation, np.array(np.zeros(5)))
+        # observation = np.append(observation, np.array(np.zeros(72)))
+        # observation = np.append(observation, np.array([robber_position]))
+        # observation = np.append(observation, np.array(np.zeros(54)))
+        observation = np.append(observation, np.array([my_resource]))
+        observation = np.append(observation, np.array([np.zeros(5)]))
+        observation = np.append(observation, np.array([road]))
+        observation = np.append(observation, np.array([robber_position]))
+        observation = np.append(observation, np.array([settle_city]))
 
-        observation = np.append(observation, [resource_list, np.array([1]), dev_list,
-                                my_resource, np.array([1]), robber_position, np.array([1])])
         # self.playCatan()
 
         # Plot diceStats histogram（diceStatsヒストグラムのプロット）
@@ -329,8 +368,10 @@ class Env_Catan(gym.Env):
         """
         if mode == "human":
             time.sleep(0.1)
-            plt.hist(self.diceStats_list, bins=11)
-            plt.show()
+            #plt.hist(self.diceStats_list, bins=11)
+            # plt.show()
+            # pygame.event.pump()
+            self.boardView.displayGameScreen()
 
             pygame.display.update()
 
@@ -339,46 +380,78 @@ class Env_Catan(gym.Env):
         OBS_SPACE = spaces.Dict({
             # 各タイルの資源（資源,マスの値）
             # 1:desert,2:ore.3:brick,4:wheat,5:wood,6:sheep
-            "board_resources": spaces.Box(
-                low=np.array([1, 2]),
-                high=np.array([5, 12]),
-                dtype=np.uint8
-            ),
+            # "board_resources": spaces.Box(
+            #     low=np.array([1, 2]),
+            #     high=np.array([5, 12]),
+            #     dtype=np.uint8
+            # ),
+
+            # "robber_resources": spaces.Box(
+            #     low=np.array([2]),
+            #     high=np.array([12]),
+            #     dtype=np.uint8
+            # ),
             "robber_resources": spaces.Box(
-                low=np.array([2]),
-                high=np.array([12]),
+                low=np.array([0]),
+                high=np.array([len(self.board.hexTileDict)]),
                 dtype=np.uint8
             ),
             # 所持している発展カード（種類,枚数）
             # 1:knight,2:VP,3:MONOPOLY,4:ROADBUILDER,5:YEAROFPLENTY
+            # "have_develop": spaces.Box(
+            #     low=np.array([1, 0]),
+            #     high=np.array([2, 20]),  # 最大枚数は後で調整
+            #     dtype=np.uint8
+            # ),
+
+            # 0:knight,1:VP,2:MONOPOLY,3:ROADBUILDER,4:YEAROFPLENTY
             "have_develop": spaces.Box(
-                low=np.array([1, 0]),
-                high=np.array([2, 20]),  # 最大枚数は後で調整
+                low=np.array(np.zeros(5)),
+                high=np.array(np.full(5, 20)),  # 最大枚数は後で調整
                 dtype=np.uint8
             ),
-            # 所持している資源カード（種類,枚数）
+
+            # # 所持している資源カード（種類,枚数）
             # 1:desert,2:ore.3:brick,4:wheat,5:wood,6:sheep
+            # "have_resources": spaces.Box(
+            #     low=np.array([1, 0]),
+            #     high=np.array([5, 20]),  # 最大枚数は後で調整
+            #     dtype=np.uint8
+            # ),
+
+            # 0:ore.1:brick,2:wheat,3:wood,4:sheep
             "have_resources": spaces.Box(
-                low=np.array([1, 0]),
-                high=np.array([5, 20]),  # 最大枚数は後で調整
+                low=np.array(np.zeros(20)),
+                high=np.array(np.full(20, 20)),  # 最大枚数は後で調整
                 dtype=np.uint8
             ),
-            # 開拓地のある場所
-            "settlement": spaces.Box(
-                low=np.array([1]),
-                high=np.array([54]),  # 最大枚数は後で調整
-                dtype=np.uint8
-            ),
-            # 都市のある場所
-            "city": spaces.Box(
-                low=np.array([1]),
-                high=np.array([54]),  # 最大枚数は後で調整
-                dtype=np.uint8
-            ),
+            # # 開拓地のある場所
+            # "settlement": spaces.Box(
+            #     low=np.array(np.zeros[54]),
+            #     high=np.array(np.full(1, 54)),  # 最大枚数は後で調整
+            #     dtype=np.uint8
+            # ),
+            # # 都市のある場所
+            # "city": spaces.Box(
+            #     low=np.array(np.zeros[54]),
+            #     high=np.array(np.full(1, 54)),   # 最大枚数は後で調整
+            #     dtype=np.uint8
+            # ),
             # 道のある場所（頂点1,頂点2）
+            # "road": spaces.Box(
+            #     low=np.array([1, 1]),
+            #     high=np.array([54, 54]),  # 最大枚数は後で調整
+            #     dtype=np.uint8
+            # ),
+            "set_city": spaces.Box(
+                low=np.array(np.zeros(54)),
+                high=np.array(np.full(54, 1)),   # 最大枚数は後で調整
+                dtype=np.uint8
+            ),
+
             "road": spaces.Box(
-                low=np.array([1, 1]),
-                high=np.array([54, 54]),  # 最大枚数は後で調整
+                low=np.array(np.zeros(72)),
+                high=np.array(np.full(72, 1)),  # 最大枚数は後で調整
                 dtype=np.uint8
             ),
             # "PieceID1": spaces.Box(low=0, high=6, dtype=np.uint8),
@@ -386,6 +459,16 @@ class Env_Catan(gym.Env):
         })
 
         return OBS_SPACE
+
+    def check_team(self, player):
+        if(player.name == "player1"):
+            return "player3"
+        elif(player.name == "player2"):
+            return "player4"
+        elif(player.name == "player3"):
+            return "player1"
+        elif(player.name == "player4"):
+            return "player2"
 
     def check_board_resources(self, resources):
         resource_list = np.array([])
@@ -404,22 +487,192 @@ class Env_Catan(gym.Env):
                 resource_list = np.append(resource_list, [6, i.num])
         return resource_list
 
+    # settlementとcityを1つのリストで表現
+    # 0:何もなし 1:player1のsettlement 2:player1のcity...
+
+    # def set_thing(self):
+    #     thing_list = np.array(np.zeros(54))
+    #     count = 1
+    #     for player_i in self.player_set:
+
+    #         for key in player_i.buildGraph.keys():
+    #             if(key == "SETTLEMENT"):
+    #                 save_list = player_i.buildGraph[key]
+    #                 for j in save_list:
+    #                     thing_list[j] = count
+    #             if(key == "CITIES"):
+    #                 save_list = player_i.buildGraph[key]
+    #                 for j in save_list:
+    #                     thing_list[j] = count+1
+    #         count += 2
+    #     print(f"set_city:{thing_list}")
+    #     return thing_list
+
+    def set_thing(self):
+        thing_list = np.array(np.zeros(54))
+        count = 1
+        for player_i in self.player_set:
+
+            for key in player_i.buildGraph.keys():
+                # print(key)
+                if(key == "SETTLEMENTS"):
+                    # print("aaa")
+                    #[key for key, value in self.board.vertex_index_to_pixel_dict.items() if value == player_i.buildGraph[key]]
+                    for j in player_i.buildGraph[key]:
+                        # print(j)
+                        index = [
+                            key for key, value in self.board.vertex_index_to_pixel_dict.items() if value == j]
+                        thing_list[index[0]] = count
+                elif(key == "CITIES"):
+                    for j in player_i.buildGraph[key]:
+                        index = [
+                            key for key, value in self.board.vertex_index_to_pixel_dict.items() if value == j]
+                        thing_list[index[0]] = count+1
+            count += 2
+        print(f"set_city:{thing_list}")
+        return thing_list
+
+    # def get_DV(self, currplayer):
+    #     dev_list = np.array([])
+    #     count = 1
+    #     for i in currplayer.devCard.keys():
+    #         dev_list = np.append(dev_list, [count, currplayer.devCard[i]])
+
+    #     return dev_list
+
     def get_DV(self, currplayer):
         dev_list = np.array([])
         count = 1
-        for i in currplayer.devCard.keys():
-            dev_list = np.append(dev_list, [count, currplayer.devCard[i]])
+        for i in currplayer.devCards.keys():
+            dev_list = np.append(dev_list, np.array([currplayer.devCards[i]]))
 
         return dev_list
+
+    def get_road_origin(self):
+        # road_list=np.array(np.zeros(72))
+        # updateGraphEdgesがヒントになりそう
+        save_dic = {}
+        count = 0
+        # print(
+        #     f"self.board.vertex_index_to_pixel_dict{self.board.vertex_index_to_pixel_dict}")
+        for i in range(54):
+            for j in range(54):
+                if(i < j):
+                    # self.board.vertex_index_to_pixel_dict[]
+                    if(self.board.vertexDistance(self.board.vertex_index_to_pixel_dict[i], self.board.vertex_index_to_pixel_dict[j]) == self.board.edgeLength):
+                        #save_dic[i, j] = count
+                        save_dic[count] = (i, j)
+                        count += 1
+        if(len(save_dic) != 72):
+            print("道路の数がエラー")
+        # print(save_dic)
+
+        return save_dic
+
+    def get_key(self, d, val_search):
+        keys = [key for key, value in d.items() if value == val_search]
+        if keys:
+            return keys
+        else:
+            return None
+
+    def sample(self, obj):
+
+        if isinstance(obj, bool):
+            print('bool型です')
+
+        if isinstance(obj, int):
+            print('int型です')
+
+        if isinstance(obj, float):
+            print('float型です')
+
+        if isinstance(obj, complex):
+            print('complex型です')
+
+        if isinstance(obj, list):
+            print('list型です')
+
+        if isinstance(obj, tuple):
+            print('tuple型です')
+
+        if isinstance(obj, range):
+            print('range型です')
+
+        if isinstance(obj, str):
+            print('str型です')
+
+        if isinstance(obj, set):
+            print('set型です')
+
+        if isinstance(obj, frozenset):
+            print('frozenset型です')
+
+        if isinstance(obj, dict):
+            print('dict型です')
+
+    # 0:道無し 1:playre1の道 2:player2の道...
+
+    def get_road(self):
+        save_dic = self.get_road_origin()
+        road_list = np.array(np.zeros(72))
+        count = 1
+        for player_i in self.player_set:
+            for key in player_i.buildGraph.keys():
+                if(key == "ROADS"):
+                    save_list = player_i.buildGraph[key]
+                    # print(save_list)
+                    # print(f"save_dic{save_dic}")
+                    for i in save_list:
+                        # print(i[0])
+                        # print(i[1])
+                        edge1 = self.get_key(
+                            self.board.vertex_index_to_pixel_dict, i[0])
+                        edge2 = self.get_key(
+                            self.board.vertex_index_to_pixel_dict, i[1])
+                        if(edge1 > edge2):
+                            x = edge1
+                            edge1 = edge2
+                            edge2 = x
+
+                        # print(edge1)
+                        # print(edge2)
+                        #self.sample(tuple([edge1, edge2]))
+                        # for j in save_dic.keys():
+                        #     if(i == j):
+                        #         road_list[save_dic[j]] = count
+                        # print(f"save_dic{save_dic}")
+                        #print(tuple([edge1[0], edge2[0]]))
+                        edge_index = self.get_key(
+                            save_dic, tuple([edge1[0], edge2[0]]))
+                        # print(f"edge_index:{edge_index}")
+                        # print(f"road_list:{road_list}")
+                        road_list[edge_index] = count
+            count += 1
+        # print(f"road:{road_list}")
+        return road_list
+
+    # def check_have_resources(self):
+    #     resource_list = np.array([])
+    #     count = 1
+    #     for i in self.resources.keys():
+    #         resource_list = np.append(
+    #             resource_list, [count, self.resources[i]])
+    #         count += 1
+
+    #     return resource_list
+
+    # player_setがプレイヤー1から4を格納したリスト
 
     def check_have_resources(self):
         resource_list = np.array([])
         count = 1
-        for i in self.resources.keys():
-            resource_list = np.append(
-                resource_list, [count, self.resources[i]])
+        for player_i in self.player_set:
+            for i in player_i.resources.keys():
+                resource_list = np.append(
+                    resource_list, np.array([player_i.resources[i]]))
             count += 1
-
+        # print(f"resource_list:{resource_list}")
         return resource_list
 
     def initial_setup(self, board):
@@ -473,31 +726,35 @@ class Env_Catan(gym.Env):
         # Initialize new players with names and colors（名前と色で新しいプレイヤーを初期化する関数）
         playerColors = ['black', 'darkslateblue', 'magenta4', 'orange1']
 
+        self.player_set = []
+
         newPlayer = myAI('player1', 'black')
         newPlayer.updateAI()
         self.playerQueue.put(newPlayer)
+        self.player_set.append(newPlayer)
 
         for i in range(3):
             #playerNameInput = input("Enter AI Player {} name: ".format(i+1))
             newPlayer = heuristicAIPlayer(f"player{i+2}", playerColors[i+1])
             newPlayer.updateAI()
             self.playerQueue.put(newPlayer)
+            self.player_set.append(newPlayer)
 
         playerList = list(self.playerQueue.queue)
 
         # Build Settlements and roads of each player forwards（各プレイヤーの集落や道路を順次構築していく）
         for player_i in playerList:
             player_i.initial_setup(self.board)
-            pygame.event.pump()
-            self.boardView.displayGameScreen()
+            # pygame.event.pump()
+            # self.boardView.displayGameScreen()
             # pygame.time.delay(1000)
 
         # Build Settlements and roads of each player reverse（各プレイヤーの集落と道路を逆向きに作る）
         playerList.reverse()
         for player_i in playerList:
             player_i.initial_setup(self.board)
-            pygame.event.pump()
-            self.boardView.displayGameScreen()
+            # pygame.event.pump()
+            # self.boardView.displayGameScreen()
             # pygame.time.delay(1000)
 
             print("Player {} starts with {} resources".format(

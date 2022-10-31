@@ -27,7 +27,7 @@ else:
 
 # 10回試行する
 
-for i in range(10):
+for i in range(1):
 
     obs = env.reset()
 

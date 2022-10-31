@@ -18,6 +18,10 @@ class myAI(player):
         # Dictionary that keeps track of resource amounts（リソース量を把握する辞書）
         self.resources = {'ORE': 0, 'BRICK': 4,
                           'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
+
+        # 勝手につけたしたself.dev
+        # self.devCards = {'KNIGHT': 0, 'VP': 0, 'MONOPOLY': 0,
+        #                  'ROADBUILDER': 0, 'YEAROFPLENTY': 0}
         print("Added new AI Player:", self.name)
 
     # Function to build an initial settlement - just choose random spot for now（初期集落を作る機能 - とりあえずランダムな場所を選んでください）
@@ -86,12 +90,19 @@ class myAI(player):
             self.build_city(list(possibleVertices.keys())[randomVertex], board)
 
         # Build a couple roads（道路を2本作る）
-        for i in range(2):
-            if(self.resources['BRICK'] > 0 and self.resources['WOOD'] > 0):
-                possibleRoads = board.get_potential_roads(self)
-                randomEdge = np.random.randint(0, len(possibleRoads.keys()))
-                self.build_road(list(possibleRoads.keys())[randomEdge][0], list(
-                    possibleRoads.keys())[randomEdge][1], board)
+        # for i in range(2):
+        #     if(self.resources['BRICK'] > 0 and self.resources['WOOD'] > 0):
+        #         possibleRoads = board.get_potential_roads(self)
+        #         randomEdge = np.random.randint(0, len(possibleRoads.keys()))
+        #         self.build_road(list(possibleRoads.keys())[randomEdge][0], list(
+        #             possibleRoads.keys())[randomEdge][1], board)
+
+        possibleRoads = board.get_potential_roads(self)
+        if(possibleRoads != {} and self.resources['BRICK'] > 0 and self.resources['WOOD'] > 0):
+            #possibleRoads = board.get_potential_roads(self)
+            randomEdge = np.random.randint(0, len(possibleRoads.keys()))
+            self.build_road(list(possibleRoads.keys())[randomEdge][0], list(
+                possibleRoads.keys())[randomEdge][1], board)
 
         # Draw a Dev Card with 1/3 probability（1/3の確率でデブカードを引く）
         devCardNum = np.random.randint(0, 3)
