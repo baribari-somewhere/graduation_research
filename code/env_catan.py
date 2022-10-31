@@ -39,12 +39,6 @@ class Env_Catan(gym.Env):
 
         self.save_road_dic = self.get_road_origin()
 
-        # self.build_position
-        # self.road_position
-
-        # self.myAI=myAI("player1")
-        # self.
-
         self.change = False
 
         # Dictionary to keep track of dice statistics（サイコロの統計情報を記録する辞書）
@@ -66,68 +60,8 @@ class Env_Catan(gym.Env):
         self.build_initial_settlements()
         # self.playCatan()
 
-        # Plot diceStats histogram（diceStatsヒストグラムのプロット）
-        #plt.hist(self.diceStats_list, bins=11)
-        # plt.show()
-
-        # self.ACTION_MAP = np.array(
-        #     ["road", "settlement", "city", "dev", "trade", "use_dv", "r_check", "c_check", "s_check", "pass"])
-        # self.ACTION_MAP = np.array(
-        #     ["road", "settlement", "city", "pass"])
-
         self.isAI = True
-        self.setupResources = []  # List to keep track of setup resources（セットアップリソースを記録するためのリスト）
-        # Initialize resources with just correct number needed for set up（セットアップに必要な数だけリソースを初期化する）
-        # Dictionary that keeps track of resource amounts（リソース量を把握する辞書）
-        # self.resources = {'ORE': 0, 'BRICK': 4,
-        #                   'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
-        #print("Added new AI Player:", self.name)
-
-        # # Build random settlement（ランダムな集落を作る）
-        # possibleVertices = board.get_setup_settlements(self)
-
-        # # Simple heuristic for choosing initial spot（初期位置の選択に関するシンプルなヒューリスティック）
-        # diceRoll_expectation = {2: 1, 3: 2, 4: 3, 5: 4,
-        #                         6: 5, 8: 5, 9: 4, 10: 3, 11: 2, 12: 1, None: 0}
-        # vertexValues = []
-
-        # # Get the adjacent hexes for each hex（各ヘクスの隣接ヘクスを取得）
-        # for v in possibleVertices.keys():
-        #     vertexNumValue = 0
-        #     resourcesAtVertex = []
-        #     # For each adjacent hex get its value and overall resource diversity for that vertex（隣接する各ヘックスについて、その値とその頂点の全体的なリソース多様性を取得します）
-        #     for adjacentHex in board.boardGraph[v].adjacentHexList:
-        #         resourceType = board.hexTileDict[adjacentHex].resource.type
-        #         if(resourceType not in resourcesAtVertex):
-        #             resourcesAtVertex.append(resourceType)
-        #         numValue = board.hexTileDict[adjacentHex].resource.num
-        #         # Add to total value of this vertex（この頂点の合計値に加算する）
-        #         vertexNumValue += diceRoll_expectation[numValue]
-
-        #     # basic heuristic for resource diversity（資源多様性のための基本的なヒューリスティック）
-        #     vertexNumValue += len(resourcesAtVertex)*2
-        #     for r in resourcesAtVertex:
-        #         if(r != 'DESERT' and r not in self.setupResources):
-        #             vertexNumValue += 2.5  # Every new resource gets a bonus（新しいリソースにはボーナスがつく）
-
-        #     vertexValues.append(vertexNumValue)
-
-        # vertexToBuild_index = vertexValues.index(max(vertexValues))
-        # vertexToBuild = list(possibleVertices.keys())[vertexToBuild_index]
-
-        # # Add to setup resources（セットアップリソースに追加）
-        # for adjacentHex in board.boardGraph[vertexToBuild].adjacentHexList:
-        #     resourceType = board.hexTileDict[adjacentHex].resource.type
-        #     if(resourceType not in self.setupResources and resourceType != 'DESERT'):
-        #         self.setupResources.append(resourceType)
-
-        # self.build_settlement(vertexToBuild, board)
-
-        # # Build random road（ランダムな道路を作る）
-        # possibleRoads = board.get_setup_roads(self)
-        # randomEdge = np.random.randint(0, len(possibleRoads.keys()))
-        # self.build_road(list(possibleRoads.keys())[randomEdge][0], list(
-        #     possibleRoads.keys())[randomEdge][1], board)
+        self.setupResources = []
 
         # アクション数定義
         ACTION_NUM = len(self.ACTION_MAP)
@@ -286,37 +220,14 @@ class Env_Catan(gym.Env):
         settle_city = self.set_thing()
         road = self.get_road()
 
-        # observation = np.append(observation, np.array([resource_list, np.array([1]), dev_list,
-        #                         my_resource, np.array([1]), robber_position, np.array([1])]))
-
-        #observation = np.append(observation, np.array([resource_list]))
-        # observation = np.append(observation, np.array(np.zeros(20)))
-        # observation = np.append(observation, np.array(np.zeros(5)))
-        # observation = np.append(observation, np.array(np.zeros(72)))
-        # observation = np.append(observation, np.array([robber_position]))
-        # observation = np.append(observation, np.array(np.zeros(54)))
         observation = np.append(observation, np.array([my_resource]))
         observation = np.append(observation, np.array([np.zeros(5)]))
         observation = np.append(observation, np.array([road]))
         observation = np.append(observation, np.array([robber_position]))
         observation = np.append(observation, np.array([settle_city]))
 
-        # self.playCatan()
-
-        # Plot diceStats histogram（diceStatsヒストグラムのプロット）
-        # plt.hist(self.diceStats_list, bins=11)
-        # plt.show()
-
-        # self.ACTION_MAP = np.array(
-        #     ["road", "settlement", "city", "dev", "trade", "pass"])
-
         self.isAI = True
-        self.setupResources = []  # List to keep track of setup resources（セットアップリソースを記録するためのリスト）
-        # Initialize resources with just correct number needed for set up（セットアップに必要な数だけリソースを初期化する）
-        # Dictionary that keeps track of resource amounts（リソース量を把握する辞書）
-        # self.resources = {'ORE': 0, 'BRICK': 4,
-        #                   'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
-        #print("Added new AI Player:", self.name)
+        self.setupResources = []
 
         return observation
 
@@ -351,24 +262,12 @@ class Env_Catan(gym.Env):
             #     dtype=np.uint8
             # ),
 
-            # "robber_resources": spaces.Box(
-            #     low=np.array([2]),
-            #     high=np.array([12]),
-            #     dtype=np.uint8
-            # ),
             "robber_resources": spaces.Box(
                 low=np.array([0]),
                 high=np.array([len(self.board.hexTileDict)]),
                 dtype=np.uint8
             ),
             # 所持している発展カード（種類,枚数）
-            # 1:knight,2:VP,3:MONOPOLY,4:ROADBUILDER,5:YEAROFPLENTY
-            # "have_develop": spaces.Box(
-            #     low=np.array([1, 0]),
-            #     high=np.array([2, 20]),  # 最大枚数は後で調整
-            #     dtype=np.uint8
-            # ),
-
             # 0:knight,1:VP,2:MONOPOLY,3:ROADBUILDER,4:YEAROFPLENTY
             "have_develop": spaces.Box(
                 low=np.array(np.zeros(5)),
@@ -377,37 +276,12 @@ class Env_Catan(gym.Env):
             ),
 
             # # 所持している資源カード（種類,枚数）
-            # 1:desert,2:ore.3:brick,4:wheat,5:wood,6:sheep
-            # "have_resources": spaces.Box(
-            #     low=np.array([1, 0]),
-            #     high=np.array([5, 20]),  # 最大枚数は後で調整
-            #     dtype=np.uint8
-            # ),
-
             # 0:ore.1:brick,2:wheat,3:wood,4:sheep
             "have_resources": spaces.Box(
                 low=np.array(np.zeros(20)),
                 high=np.array(np.full(20, 20)),  # 最大枚数は後で調整
                 dtype=np.uint8
             ),
-            # # 開拓地のある場所
-            # "settlement": spaces.Box(
-            #     low=np.array(np.zeros[54]),
-            #     high=np.array(np.full(1, 54)),  # 最大枚数は後で調整
-            #     dtype=np.uint8
-            # ),
-            # # 都市のある場所
-            # "city": spaces.Box(
-            #     low=np.array(np.zeros[54]),
-            #     high=np.array(np.full(1, 54)),   # 最大枚数は後で調整
-            #     dtype=np.uint8
-            # ),
-            # 道のある場所（頂点1,頂点2）
-            # "road": spaces.Box(
-            #     low=np.array([1, 1]),
-            #     high=np.array([54, 54]),  # 最大枚数は後で調整
-            #     dtype=np.uint8
-            # ),
             "set_city": spaces.Box(
                 low=np.array(np.zeros(54)),
                 high=np.array(np.full(54, 1)),   # 最大枚数は後で調整
@@ -497,7 +371,7 @@ class Env_Catan(gym.Env):
         else:
             if(self.tuple_check(action[0])):
                 road_position = (
-                    self.board.vertex_index_to_pixel_dict[action[0]], self.board.vertex_index_to_pixel_dict[action[1]])
+                    self.board.vertex_index_to_pixel_dict[action[0][0]], self.board.vertex_index_to_pixel_dict[action[0][1]])
                 road_F = True
                 #self.action_input(action[0], Player)
                 self.action_input(action[1:], Player)
@@ -534,24 +408,6 @@ class Env_Catan(gym.Env):
 
     # settlementとcityを1つのリストで表現
     # 0:何もなし 1:player1のsettlement 2:player1のcity...
-
-    # def set_thing(self):
-    #     thing_list = np.array(np.zeros(54))
-    #     count = 1
-    #     for player_i in self.player_set:
-
-    #         for key in player_i.buildGraph.keys():
-    #             if(key == "SETTLEMENT"):
-    #                 save_list = player_i.buildGraph[key]
-    #                 for j in save_list:
-    #                     thing_list[j] = count
-    #             if(key == "CITIES"):
-    #                 save_list = player_i.buildGraph[key]
-    #                 for j in save_list:
-    #                     thing_list[j] = count+1
-    #         count += 2
-    #     print(f"set_city:{thing_list}")
-    #     return thing_list
 
     def set_thing(self):
         thing_list = np.array(np.zeros(54))
@@ -592,27 +448,6 @@ class Env_Catan(gym.Env):
             dev_list = np.append(dev_list, np.array([currplayer.devCards[i]]))
 
         return dev_list
-
-    # def get_road_origin(self):
-    #     # road_list=np.array(np.zeros(72))
-    #     # updateGraphEdgesがヒントになりそう
-    #     save_dic = {}
-    #     count = 0
-    #     # print(
-    #     #     f"self.board.vertex_index_to_pixel_dict{self.board.vertex_index_to_pixel_dict}")
-    #     for i in range(54):
-    #         for j in range(54):
-    #             if(i < j):
-    #                 # self.board.vertex_index_to_pixel_dict[]
-    #                 if(self.board.vertexDistance(self.board.vertex_index_to_pixel_dict[i], self.board.vertex_index_to_pixel_dict[j]) == self.board.edgeLength):
-    #                     #save_dic[i, j] = count
-    #                     save_dic[count] = (i, j)
-    #                     count += 1
-    #     if(len(save_dic) != 72):
-    #         print("道路の数がエラー")
-    #     # print(save_dic)
-
-    #     return save_dic
 
     def get_key(self, d, val_search):
         keys = [key for key, value in d.items() if value == val_search]
@@ -717,16 +552,6 @@ class Env_Catan(gym.Env):
             count += 1
         # print(f"road:{road_list}")
         return road_list
-
-    # def check_have_resources(self):
-    #     resource_list = np.array([])
-    #     count = 1
-    #     for i in self.resources.keys():
-    #         resource_list = np.append(
-    #             resource_list, [count, self.resources[i]])
-    #         count += 1
-
-    #     return resource_list
 
     # player_setがプレイヤー1から4を格納したリスト
 
