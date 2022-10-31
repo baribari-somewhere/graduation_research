@@ -15,6 +15,23 @@ import numpy as np
 import sys
 import pygame
 import matplotlib.pyplot as plt
+from os import environ
+
+DEVICE = "gpu_limited"  # ["cpu", "gpu_limited", "gpu_unlimited"]
+
+
+if (DEVICE == "cpu"):
+
+    environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+elif (DEVICE == "gpu_limited"):
+
+    environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+
+elif (DEVICE == "gpu_unlimited"):
+
+    pass
+
 
 env = Env_Catan()
 

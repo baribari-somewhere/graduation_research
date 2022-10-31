@@ -12,6 +12,7 @@ Point = collections.namedtuple("Point", ["x", "y"])
 Axial_Point = collections.namedtuple("Axial_Point", ['q', 'r'])
 
 _Hex = collections.namedtuple("Hex", ["q", "r", "s"])
+#_Hex = collections.namedtuple("Hex", ["q", "R", "s"])
 
 
 def Hex(q, r, s):

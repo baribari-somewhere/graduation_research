@@ -4,6 +4,7 @@
 import pygame
 from hexTile import *
 from hexLib import *
+import sys
 
 pygame.init()
 
