@@ -1,9 +1,10 @@
 
 
 action = [
-    ["dp"],
-    ["up"],
     ["p"],
+    ["d"],
+    ["u"],
+
     [(0, 1), "Rp"],
     [(0, 5), "Rp"],
     [(0, 12), "Rp"],
@@ -124,12 +125,20 @@ def sample(obj):
         print('dict型です')
 
 
+action_test = [
+    ["p"],
+    ["d"],
+    ["u"],
+
+]
 ACTION = action
 
 # sample(action[3][0])
 # print(action[3][0])
 # for i in action:
 #     sample(action[0])
-print(len([(1, 2), 2]))
+
+l = ["p"]
+print(l[0])
 # print(action)
 # l = (1, 3, 2, 3, 1)

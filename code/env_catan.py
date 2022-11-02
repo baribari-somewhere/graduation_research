@@ -40,6 +40,7 @@ class Env_Catan(gym.Env):
         self.save_road_dic = self.get_road_origin()
 
         self.change = False
+        self.dicerolled = False
 
         # Dictionary to keep track of dice statistics（サイコロの統計情報を記録する辞書）
         self.diceStats = {2: 0, 3: 0, 4: 0, 5: 0, 6: 0,
@@ -75,38 +76,41 @@ class Env_Catan(gym.Env):
 
         action = self.ACTION_MAP[action_index]
         done = False
-        reward = 0
+        #reward = 0
         #numTurns = 0
         self.point = 0
 
         for currPlayer in self.playerQueue.queue:
-            self.turn_count += 1
-            diceNum = self.rollDice()
-            diceRolled = True
-            self.update_playerResources(diceNum, currPlayer)
-            self.diceStats[diceNum] += 1
-            self.diceStats_list.append(diceNum)
+            if(self.dicerolled == False):
+                self.turn_count += 1
+                diceNum = self.rollDice()
+                diceRolled = True
+                self.update_playerResources(diceNum, currPlayer)
+                self.diceStats[diceNum] += 1
+                self.diceStats_list.append(diceNum)
+                self.dicerolled = True
 
-            currPlayer.updateDevCards()
-            currPlayer.devCardPlayedThisTurn = False
+            # currPlayer.updateDevCards()
+            # currPlayer.devCardPlayedThisTurn = False
 
-            if(currPlayer.name == 'player1'):
-                # new_settlement = np.array([])
-                # new_city = np.array([])
-                # new_road = np.array([])
-                count = 0
-                while(self.change == False or count < 1):
-                    self.action_input(action, currPlayer)
-                    count += 1
-                #self.action_input(action, currPlayer)
+            if(currPlayer.name == 'player1' and self.change == False):
+                print("player1 playing...")
+                print(f"self.change = {self.change}")
+
+                self.action_input(action, currPlayer)
 
                 reward = self.point
-                self.change = False
-            else:
+
+            elif(self.change == True):
                 currPlayer.move(self.board)
+                self.dicerolled = False
+                if(currPlayer.name == "player4"):
+                    self.change = False
+
             self.check_longest_road(currPlayer)
             if currPlayer.victoryPoints >= self.maxPoints:
-                reward += 20
+                if(currPlayer.name == "player1"):
+                    reward += 20
                 Over_Flag = True
                 p_v = currPlayer.name
 
@@ -119,45 +123,46 @@ class Env_Catan(gym.Env):
                     p_v, p_team, int(self.turn_count)))
                 print(self.diceStats)
                 print("Exiting game in 10 seconds...")
-                # pygame.time.delay(20000)
+                # pygame.time.delay(10000)
 
                 done = True
 
             # 辞書順board_resources,city,have_develop,have_resources,road,
             # robber_resources,settlement
 
-            observation = np.array([])
+        observation = np.array([])
 
-            # どのマスにどの資源が設定されているか
-            resource_list = self.check_board_resources(
-                self.board.resourcesList)
+        # どのマスにどの資源が設定されているか
+        resource_list = self.check_board_resources(
+            self.board.resourcesList)
 
-            # 発展カード
-            dev_list = self.get_DV(currPlayer)
+        # 発展カード
+        dev_list = self.get_DV(currPlayer)
 
-            # 盗賊がどこにいるか
-            robber_position = self.board.get_robber()
+        # 盗賊がどこにいるか
+        robber_position = self.board.get_robber()
 
-            # なんの資源を持っているか
-            my_resource = self.check_have_resources()
+        # なんの資源を持っているか
+        my_resource = self.check_have_resources()
 
-            settle_city = self.set_thing()
-            road = self.get_road()
+        settle_city = self.set_thing()
+        road = self.get_road()
 
-            # observation = np.append(observation, np.array([resource_list, new_city, dev_list,
-            #                         my_resource, new_road, robber_position, new_settlement]))
+        # observation = np.append(observation, np.array([resource_list, new_city, dev_list,
+        #                         my_resource, new_road, robber_position, new_settlement]))
 
-            # observation = np.append(observation, np.array([my_resource, dev_list,
-            #                          road, robber_position, set&city]))
+        # observation = np.append(observation, np.array([my_resource, dev_list,
+        #                          road, robber_position, set&city]))
 
-            #observation = np.append(observation, np.array([resource_list]))
-            observation = np.append(observation, np.array([my_resource]))
-            observation = np.append(observation, np.array([dev_list]))
-            observation = np.append(observation, np.array([road]))
-            observation = np.append(observation, np.array([robber_position]))
-            observation = np.append(observation, np.array([settle_city]))
+        #observation = np.append(observation, np.array([resource_list]))
+        observation = np.append(observation, np.array([my_resource]))
+        observation = np.append(observation, np.array([dev_list]))
+        observation = np.append(observation, np.array([road]))
+        observation = np.append(observation, np.array([robber_position]))
+        observation = np.append(observation, np.array([settle_city]))
+        print(f"reward{reward}")
 
-            # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
+        # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
 
         return observation, reward, done, {}
 
@@ -172,7 +177,9 @@ class Env_Catan(gym.Env):
         self.team_V = False
         self.change = False
         self.turn_count = 0
-
+        self.point = 0
+        self.change = False
+        self.dicerolled = False
         # Dictionary to keep track of dice statistics（サイコロの統計情報を記録する辞書）
         self.diceStats = {2: 0, 3: 0, 4: 0, 5: 0, 6: 0,
                           7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0}
@@ -299,8 +306,12 @@ class Env_Catan(gym.Env):
 
         return OBS_SPACE
 
-    def int_check(self, obj):
+    def int_check_convert(self, obj):
         if isinstance(int(obj), int):
+            return True
+
+    def int_check(self, obj):
+        if isinstance(obj, int):
             return True
 
     def tuple_check(self, obj):
@@ -314,70 +325,161 @@ class Env_Catan(gym.Env):
     def action_input(self, action, Player):
         build_F = False
         road_F = False
-        if(len(action) == 1):
-            if(self.str_check(action)):
-                if(action == "d"):
-                    Player.draw_devCard(self.board)
+        self.point = 0
 
-                    a = 0
-                elif(action == "u"):
-                    Player.play_devCard(Player)
-                    a = 0
-                elif(action == "R"):
-                    if(road_F == True):
-                        if(Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0):
-                            possibleRoads = self.board.get_potential_roads(
-                                self, Player)
-                            if(possibleRoads[road_position[0], road_position[1]] == True):
-                                Player.build_road[road_position[0],
-                                                  road_position[1], self.board]
-                                self.point += 0.5
+        if(self.int_check(action[0])):
+            build_position = self.board.vertex_index_to_pixel_dict[int(
+                action[0])]
+            build_F = True
+            self.action_input(action[1:], Player)
 
-                            road_F = False
+        elif(self.tuple_check(action[0])):
+            road_position = (
+                self.board.vertex_index_to_pixel_dict[action[0][0]], self.board.vertex_index_to_pixel_dict[action[0][1]])
+            road_F = True
+            self.action_input(action[1:], Player)
 
-                elif(action == "S"):
-                    if(build_F == True):
-                        if((Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0 and Player.resources['SHEEP'] > 0 and Player.resources['WHEAT'] > 0)):
-                            possibleSettlements = self.board.get_potential_settlements(
-                                self, Player)
-                            if(possibleSettlements[build_position] == True):
-                                Player.build_settlement[build_position,
-                                                        self.board]
-                                self.point += 2
-                            build_F = False
-                    a = 0
-                elif(action == "C"):
-                    if(build_F == True):
-                        if(Player.resources['WHEAT'] >= 2 and Player.resources['ORE'] >= 3):
-                            possibleCities = self.board.get_potential_cities(
-                                self, Player)
-                            if(possibleCities[build_position]):
-                                Player.build_city[build_position, self.board]
-                                self.point += 3
-                            build_F = False
-                    a = 0
-                elif(action == "p"):
-                    self.change = True
-                    a = 0
-                elif(self.int_check(action)):
-                    build_position = self.board.vertex_index_to_pixel_dict[int(
-                        action)]
-                    build_F = True
-            # elif(self.tuple_check(action)):
-            #     road_position = (
-            #         self.board.vertex_index_to_pixel_dict[action[0]], self.board.vertex_index_to_pixel_dict[action[1]])
-            #     road_F = True
-            #     tuple_F = True
+        elif(len(action) == 1):
+
+            if(action == "d"):
+                Player.draw_devCard(self.board)
+                self.point += 0.1
+                a = 0
+            elif(action == "u"):
+                Player.play_devCard(Player)
+                a = 0
+            elif(action == "R"):
+                if(road_F == True):
+                    if(Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0):
+                        possibleRoads = self.board.get_potential_roads(
+                            self, Player)
+                        if(possibleRoads[road_position[0], road_position[1]] == True):
+                            Player.build_road[road_position[0],
+                                              road_position[1], self.board]
+                            self.point += 0.5
+
+                        road_F = False
+
+            elif(action == "S"):
+                if(build_F == True):
+                    if((Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0 and Player.resources['SHEEP'] > 0 and Player.resources['WHEAT'] > 0)):
+                        possibleSettlements = self.board.get_potential_settlements(
+                            self, Player)
+                        if(possibleSettlements[build_position] == True):
+                            Player.build_settlement[build_position,
+                                                    self.board]
+                            self.point += 2
+                        build_F = False
+                a = 0
+            elif(action == "C"):
+                if(build_F == True):
+                    if(Player.resources['WHEAT'] >= 2 and Player.resources['ORE'] >= 3):
+                        possibleCities = self.board.get_potential_cities(
+                            self, Player)
+                        if(possibleCities[build_position]):
+                            Player.build_city[build_position, self.board]
+                            self.point += 3
+                        build_F = False
+                a = 0
+            elif(action == "p"):
+                self.change = True
+                self.dicerolled = False
+                self.point = 10
+                a = 0
+            elif(action == "t"):
+                for r1, r1_amount in Player.resources.items():
+                    # heuristic to trade if a player has more than 5 of a particular resource（プレイヤーが特定のリソースを5つ以上持っている場合のヒューリスティックトレード）
+                    if(r1_amount >= 6):
+                        for r2, r2_amount in Player.resources.items():
+                            if(r2_amount < 1):
+                                self.trade_with_bank(r1, r2)
+                                break
+
         else:
-            if(self.tuple_check(action[0])):
-                road_position = (
-                    self.board.vertex_index_to_pixel_dict[action[0][0]], self.board.vertex_index_to_pixel_dict[action[0][1]])
-                road_F = True
-                #self.action_input(action[0], Player)
-                self.action_input(action[1:], Player)
-            else:
-                self.action_input(action[0], Player)
-                self.action_input(action[1:], Player)
+            self.action_input(action[0], Player)
+            self.action_input(action[1:], Player)
+
+    # def action_input(self, action, Player):
+    #     build_F = False
+    #     road_F = False
+    #     if(len(action) == 1):
+    #         if(self.str_check(action)):
+    #             if(len(action[0]) != 1):
+    #                 self.action_input(action[0][0])
+    #                 self.action_input(action[0][1:])
+
+    #             if(action == "d"):
+    #                 Player.draw_devCard(self.board)
+    #                 self.point += 0.1
+
+    #                 a = 0
+    #             elif(action == "u"):
+    #                 Player.play_devCard(Player)
+    #                 a = 0
+    #             elif(action == "R"):
+    #                 if(road_F == True):
+    #                     if(Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0):
+    #                         possibleRoads = self.board.get_potential_roads(
+    #                             self, Player)
+    #                         if(possibleRoads[road_position[0], road_position[1]] == True):
+    #                             Player.build_road[road_position[0],
+    #                                               road_position[1], self.board]
+    #                             self.point += 0.5
+
+    #                         road_F = False
+
+    #             elif(action == "S"):
+    #                 if(build_F == True):
+    #                     if((Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0 and Player.resources['SHEEP'] > 0 and Player.resources['WHEAT'] > 0)):
+    #                         possibleSettlements = self.board.get_potential_settlements(
+    #                             self, Player)
+    #                         if(possibleSettlements[build_position] == True):
+    #                             Player.build_settlement[build_position,
+    #                                                     self.board]
+    #                             self.point += 2
+    #                         build_F = False
+    #                 a = 0
+    #             elif(action == "C"):
+    #                 if(build_F == True):
+    #                     if(Player.resources['WHEAT'] >= 2 and Player.resources['ORE'] >= 3):
+    #                         possibleCities = self.board.get_potential_cities(
+    #                             self, Player)
+    #                         if(possibleCities[build_position]):
+    #                             Player.build_city[build_position, self.board]
+    #                             self.point += 3
+    #                         build_F = False
+    #                 a = 0
+    #             elif(action == "p"):
+    #                 self.change = True
+    #                 self.dicerolled = False
+    #                 a = 0
+    #             elif(action == "t"):
+    #                 for r1, r1_amount in Player.resources.items():
+    #                     # heuristic to trade if a player has more than 5 of a particular resource（プレイヤーが特定のリソースを5つ以上持っている場合のヒューリスティックトレード）
+    #                     if(r1_amount >= 6):
+    #                         for r2, r2_amount in Player.resources.items():
+    #                             if(r2_amount < 1):
+    #                                 self.trade_with_bank(r1, r2)
+    #                                 break
+    #             elif(self.int_check(action)):
+    #                 build_position = self.board.vertex_index_to_pixel_dict[int(
+    #                     action)]
+    #                 build_F = True
+    #         # elif(self.tuple_check(action)):
+    #         #     road_position = (
+    #         #         self.board.vertex_index_to_pixel_dict[action[0]], self.board.vertex_index_to_pixel_dict[action[1]])
+    #         #     road_F = True
+    #         #     tuple_F = True
+    #     else:
+    #         if(self.tuple_check(action[0])):
+    #             road_position = (
+    #                 self.board.vertex_index_to_pixel_dict[action[0][0]], self.board.vertex_index_to_pixel_dict[action[0][1]])
+    #             road_F = True
+    #             #self.action_input(action[0], Player)
+    #             self.action_input(action[1:], Player)
+    #         else:
+    #             self.action_input(action[0], Player)
+    #             self.action_input(action[1:], Player)
 
     def check_team(self, player):
         if(player.name == "player1"):
@@ -707,8 +809,8 @@ class Env_Catan(gym.Env):
                     player_i.name, player_i.resources, player_i.victoryPoints))
                 #print('Dev Cards:{}'.format(player_i.devCards))
                 #print("RoadsLeft:{}, SettlementsLeft:{}, CitiesLeft:{}".format(player_i.roadsLeft, player_i.settlementsLeft, player_i.citiesLeft))
-                print('MaxRoadLength:{}, Longest Road:{}\n'.format(
-                    player_i.maxRoadLength, player_i.longestRoadFlag))
+                # print('MaxRoadLength:{}, Longest Road:{}\n'.format(
+                #     player_i.maxRoadLength, player_i.longestRoadFlag))
 
         else:
             print("AI using heuristic robber...")
