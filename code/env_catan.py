@@ -37,6 +37,8 @@ class Env_Catan(gym.Env):
 
         self.point = 0
 
+        self.count = 0
+
         self.save_road_dic = self.get_road_origin()
 
         self.change = False
@@ -64,10 +66,12 @@ class Env_Catan(gym.Env):
         self.isAI = True
         self.setupResources = []
 
+        # print(f"self.ACTION_MAP:{self.ACTION_MAP}")
         # アクション数定義
         ACTION_NUM = len(self.ACTION_MAP)
         self.action_space = gym.spaces.Discrete(ACTION_NUM)
-        self.observation_space = spaces.flatten_space(self.OBSERVATION_SPACE())
+        self.observation_space = spaces.flatten_space(
+            self.OBSERVATION_SPACE())
         print(self.board.vertex_index_to_pixel_dict)
 
     # def step(self, action_index: int, board):
@@ -79,6 +83,8 @@ class Env_Catan(gym.Env):
         #reward = 0
         #numTurns = 0
         self.point = 0
+
+        print(f"action_index:{action_index}")
 
         for currPlayer in self.playerQueue.queue:
             if(self.dicerolled == False):
@@ -160,7 +166,7 @@ class Env_Catan(gym.Env):
         observation = np.append(observation, np.array([road]))
         observation = np.append(observation, np.array([robber_position]))
         observation = np.append(observation, np.array([settle_city]))
-        print(f"reward{reward}")
+        print(f"reward:{reward}")
 
         # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
 
@@ -327,6 +333,11 @@ class Env_Catan(gym.Env):
         road_F = False
         self.point = 0
 
+        self.count += 1
+
+        # if(self.count > 100):
+        #     exit()
+        print(f"action:{action}")
         if(self.int_check(action[0])):
             build_position = self.board.vertex_index_to_pixel_dict[int(
                 action[0])]
@@ -339,16 +350,19 @@ class Env_Catan(gym.Env):
             road_F = True
             self.action_input(action[1:], Player)
 
-        elif(len(action) == 1):
-
-            if(action == "d"):
+        elif(len(action[0]) == 1):
+            # self.sample(action)
+            print(action[0])
+            # exit()
+            if(action[0] == "d"):
                 Player.draw_devCard(self.board)
-                self.point += 0.1
+
+                #self.point += 0.1
                 a = 0
-            elif(action == "u"):
+            elif(action[0] == "u"):
                 Player.play_devCard(Player)
                 a = 0
-            elif(action == "R"):
+            elif(action[0] == "R"):
                 if(road_F == True):
                     if(Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0):
                         possibleRoads = self.board.get_potential_roads(
@@ -360,7 +374,7 @@ class Env_Catan(gym.Env):
 
                         road_F = False
 
-            elif(action == "S"):
+            elif(action[0] == "S"):
                 if(build_F == True):
                     if((Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0 and Player.resources['SHEEP'] > 0 and Player.resources['WHEAT'] > 0)):
                         possibleSettlements = self.board.get_potential_settlements(
@@ -371,7 +385,7 @@ class Env_Catan(gym.Env):
                             self.point += 2
                         build_F = False
                 a = 0
-            elif(action == "C"):
+            elif(action[0] == "C"):
                 if(build_F == True):
                     if(Player.resources['WHEAT'] >= 2 and Player.resources['ORE'] >= 3):
                         possibleCities = self.board.get_potential_cities(
@@ -381,12 +395,12 @@ class Env_Catan(gym.Env):
                             self.point += 3
                         build_F = False
                 a = 0
-            elif(action == "p"):
+            elif(action[0] == "p"):
                 self.change = True
                 self.dicerolled = False
-                self.point = 10
+                #self.point = 10
                 a = 0
-            elif(action == "t"):
+            elif(action[0] == "t"):
                 for r1, r1_amount in Player.resources.items():
                     # heuristic to trade if a player has more than 5 of a particular resource（プレイヤーが特定のリソースを5つ以上持っている場合のヒューリスティックトレード）
                     if(r1_amount >= 6):
@@ -396,8 +410,8 @@ class Env_Catan(gym.Env):
                                 break
 
         else:
-            self.action_input(action[0], Player)
-            self.action_input(action[1:], Player)
+            self.action_input(action[0][0], Player)
+            self.action_input(action[0][1:], Player)
 
     # def action_input(self, action, Player):
     #     build_F = False

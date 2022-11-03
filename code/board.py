@@ -35,6 +35,8 @@ class catanBoard(hexTile, Vertex):
         self.flat = Layout(layout_flat, Point(self.edgeLength, self.edgeLength), Point(
             self.width/2, self.height/2))  # specify Layout
 
+        self.total_hexIndex_i = 0
+
         ##INITIALIZE BOARD##
         print("Initializing Catan Game Board...")
         # Assign resources numbers randomly（リソース番号をランダムに割り当てる）
@@ -69,6 +71,8 @@ class catanBoard(hexTile, Vertex):
 
             self.hexTileDict[hexIndex_i] = newHexTile
             hexIndex_i += 1
+
+        self.total_hexindex_i = hexIndex_i
 
         # Create the vertex graph（頂点グラフの作成）
         self.vertexIndexCount = 0  # initialize vertex index count to 0（頂点インデックス数を0に初期化する）
