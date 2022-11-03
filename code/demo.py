@@ -16,13 +16,13 @@ if len(sys.argv) > 1:
 
     args = sys.argv
 
-    model = DQN.load(f"./save_weights_police/rl_model_{args[1]}_steps")
+    model = DQN.load(f"./save_weights/rl_model_{args[1]}_steps")
 
 else:
 
     model = DQN.load(
 
-        f"./save_weights_police/rl_model_{setting.default_total_timesteps}_steps")
+        f"./save_weights/rl_model_{setting.default_total_timesteps}_steps")
 
 
 # 10回試行する

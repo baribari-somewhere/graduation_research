@@ -85,8 +85,8 @@ action = [
 ]
 
 for i in range(54):
-    action.append([str(i), "Sp"])
-    action.append([str(i), "Cp"])
+    action.append([(i), "Sp"])
+    action.append([(i), "Cp"])
 
 
 def sample(obj):
