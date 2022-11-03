@@ -50,4 +50,5 @@ def sample(obj):
 
 sample(list1[0])
 
-print(dic[(1, 2, 3)])
+a = (1, 2)
+print(a[0])

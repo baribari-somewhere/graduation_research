@@ -39,6 +39,9 @@ class Env_Catan(gym.Env):
 
         self.count = 0
 
+        self.build_F = False
+        self.road_F = False
+
         self.save_road_dic = self.get_road_origin()
 
         self.change = False
@@ -84,6 +87,11 @@ class Env_Catan(gym.Env):
         #numTurns = 0
         self.point = 0
 
+        self.build_position = self.board.get_potential_cities(
+            self.playerQueue.queue[0])
+        self.road_position = self.board.get_potential_roads(
+            self.playerQueue.queue[0])
+
         # print(f"action_index:{action_index}")
 
         for currPlayer in self.playerQueue.queue:
@@ -116,7 +124,7 @@ class Env_Catan(gym.Env):
             self.check_longest_road(currPlayer)
             if currPlayer.victoryPoints >= self.maxPoints:
                 if(currPlayer.name == "player1"):
-                    reward += 50
+                    reward += 200
                 Over_Flag = True
                 p_v = currPlayer.name
 
@@ -329,8 +337,7 @@ class Env_Catan(gym.Env):
             return True
 
     def action_input(self, action, Player):
-        build_F = False
-        road_F = False
+
         self.point = 0
 
         self.count += 1
@@ -341,15 +348,15 @@ class Env_Catan(gym.Env):
         #     exit()
         # print(f"action:{action}")
         if(self.int_check(action[0])):
-            build_position = self.board.vertex_index_to_pixel_dict[int(
+            self.build_position = self.board.vertex_index_to_pixel_dict[int(
                 action[0])]
-            build_F = True
+            self.build_F = True
             self.action_input(action[1:], Player)
 
         elif(self.tuple_check(action[0])):
-            road_position = (
+            self.road_position = (
                 self.board.vertex_index_to_pixel_dict[action[0][0]], self.board.vertex_index_to_pixel_dict[action[0][1]])
-            road_F = True
+            self.road_F = True
             self.action_input(action[1:], Player)
 
         elif(len(action[0]) == 1):
@@ -365,37 +372,49 @@ class Env_Catan(gym.Env):
                 Player.play_devCard(Player)
                 a = 0
             elif(action[0] == "R"):
-                if(road_F == True):
+                if(self.road_F == True):
+                    # print("roadあり")
                     if(Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0):
-                        possibleRoads = self.board.get_potential_roads(
-                            self, Player)
-                        if(possibleRoads[road_position[0], road_position[1]] == True):
-                            Player.build_road[road_position[0],
-                                              road_position[1], self.board]
-                            self.point += 0.5
 
-                        road_F = False
+                        possibleRoads = self.board.get_potential_roads(Player)
+                        #print(f"possibleRoads: {possibleRoads}")
+                        if((self.road_position[0], self.road_position[1]) in possibleRoads.keys()):
+                            Player.build_road(self.road_position[0],
+                                              self.road_position[1], self.board)
+                            self.point += 5
+                            print("road")
+                        # else:
+                        #     print("場所無し")
+                        self.road_F = False
+
+                    # else:
+                    #     print("素材無し")
 
             elif(action[0] == "S"):
-                if(build_F == True):
+                if(self.build_F == True):
                     if((Player.resources['BRICK'] > 0 and Player.resources['WOOD'] > 0 and Player.resources['SHEEP'] > 0 and Player.resources['WHEAT'] > 0)):
                         possibleSettlements = self.board.get_potential_settlements(
-                            self, Player)
-                        if(possibleSettlements[build_position] == True):
-                            Player.build_settlement[build_position,
-                                                    self.board]
-                            self.point += 2
-                        build_F = False
+                            Player)
+                        #print(f"possibleSettlements: {possibleSettlements}")
+                        if(self.build_position in possibleSettlements.keys()):
+                            Player.build_settlement(self.build_position,
+                                                    self.board)
+                            self.point += 15
+                            print("settlement")
+                        self.build_F = False
                 a = 0
             elif(action[0] == "C"):
-                if(build_F == True):
+                if(self.build_F == True):
                     if(Player.resources['WHEAT'] >= 2 and Player.resources['ORE'] >= 3):
                         possibleCities = self.board.get_potential_cities(
-                            self, Player)
-                        if(possibleCities[build_position]):
-                            Player.build_city[build_position, self.board]
-                            self.point += 3
-                        build_F = False
+                            Player)
+                        #print(f"possibleCities: {possibleCities}")
+                        if(self.build_position in possibleCities.keys()):
+                            Player.build_city(self.build_position, self.board)
+                            self.point += 30
+                            print("City")
+                        self.build_F = False
+                        # print("City")
                 a = 0
             elif(action[0] == "p"):
                 self.change = True

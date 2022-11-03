@@ -4,6 +4,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 
 from stable_baselines3.common.evaluation import evaluate_policy
 
+
 import time
 
 from board import *
@@ -36,6 +37,7 @@ from os import environ
 
 
 env = Env_Catan()
+#env = Monitor(env, log_dir, allow_early_resets=True)
 
 model = DQN("MlpPolicy", env, verbose=1, tensorboard_log="log", device="auto")
 
