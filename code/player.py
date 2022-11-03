@@ -75,14 +75,16 @@ class player():
                 maxRoads = self.get_road_length(board)
                 self.maxRoadLength = maxRoads
 
-                print('{} Built a Road. MaxRoadLength: {}'.format(
-                    self.name, self.maxRoadLength))
+                # print('{} Built a Road. MaxRoadLength: {}'.format(
+                #     self.name, self.maxRoadLength))
 
             else:
-                print("No roads available to build")
+                a = 1
+                #print("No roads available to build")
 
         else:
-            print("Insufficient Resources to Build Road - Need 1 BRICK, 1 WOOD")
+            a = 1
+            #print("Insufficient Resources to Build Road - Need 1 BRICK, 1 WOOD")
 
     # function to build a settlement on vertex with coordinates vCoord(座標vCoordを持つ頂点に集落を作る関数です)
     def build_settlement(self, vCoord, board):
@@ -112,20 +114,22 @@ class player():
                 # update the overall boardGraph(boardGraph全体を更新する)
                 board.updateBoardGraph_settlement(vCoord, self)
 
-                print('{} Built a Settlement'.format(self.name))
+                #print('{} Built a Settlement'.format(self.name))
 
                 # Add port to players port list if it is a new port(新しいポートの場合、プレイヤーポートリストにポートを追加する)
                 if((board.boardGraph[vCoord].port != False) and (board.boardGraph[vCoord].port not in self.portList)):
                     self.portList.append(board.boardGraph[vCoord].port)
-                    print("{} now has {} Port access".format(
-                        self.name, board.boardGraph[vCoord].port))
+                    # print("{} now has {} Port access".format(
+                    #     self.name, board.boardGraph[vCoord].port))
 
             else:
-                print("No settlements available to build")
+                a = 1
+                # print("No settlements available to build")
 
         else:
-            print(
-                "Insufficient Resources to Build Settlement. Build Cost: 1 BRICK, 1 WOOD, 1 WHEAT, 1 SHEEP")
+            a = 1
+            # print(
+            #     "Insufficient Resources to Build Settlement. Build Cost: 1 BRICK, 1 WOOD, 1 WHEAT, 1 SHEEP")
 
     # function to build a city on vertex v(頂点vに都市を建設する機能)
     def build_city(self, vCoord, board):
@@ -145,13 +149,15 @@ class player():
 
                 # update the overall boardGraph(boardGraph全体を更新する)
                 board.updateBoardGraph_city(vCoord, self)
-                print('{} Built a City'.format(self.name))
+                #print('{} Built a City'.format(self.name))
 
             else:
-                print("No cities available to build")
+                a = 1
+                #print("No cities available to build")
 
         else:
-            print("Insufficient Resources to Build City. Build Cost: 3 ORE, 2 WHEAT")
+            a = 1
+            #print("Insufficient Resources to Build City. Build Cost: 3 ORE, 2 WHEAT")
 
     # function to move robber to a specific hex and steal from a player(強盗を特定のヘクスに移動させ、プレイヤーから盗む機能 強盗を特定のヘクスに移動させ、プレイヤーから盗む機能)
     def move_robber(self, hexIndex, board, player_robbed):
@@ -166,7 +172,7 @@ class player():
     # Function to steal a random resource from player_2(プレイヤー_2からランダムな資源を盗む機能)
     def steal_resource(self, player_2):
         if(player_2 == None):
-            print("No Player on this hex to Rob")
+            #print("No Player on this hex to Rob")
             return
 
         # Get all resources player 2 has in a list and use random list index to steal(プレイヤー2が持っているすべての資源をリストで取得し、ランダムなリストのインデックスを使用して盗み出す)
@@ -183,8 +189,8 @@ class player():
         # Update resources of both players(両プレイヤーのリソースを更新)
         player_2.resources[resourceStolen] -= 1
         self.resources[resourceStolen] += 1
-        print("Stole 1 {} from Player {}".format(
-            resourceStolen, player_2.name))
+        # print("Stole 1 {} from Player {}".format(
+        #     resourceStolen, player_2.name))
 
         return
 
@@ -299,7 +305,8 @@ class player():
 
             # IF there are no devCards left(デビットカードが残っていない場合)
             if(devCardsToDraw == []):
-                print("No Dev Cards Left!")
+                #print("No Dev Cards Left!")
+                a = 1
                 return
 
             devCardIndex = np.random.randint(0, len(devCardsToDraw))
@@ -326,11 +333,12 @@ class player():
                 self.newDevCards.append(cardDrawn)
                 board.devCardStack[cardDrawn] -= 1
 
-            print("{} drew a {} from Development Card Stack".format(
-                self.name, cardDrawn))
+            # print("{} drew a {} from Development Card Stack".format(
+            #     self.name, cardDrawn))
 
         else:
-            print("Insufficient Resources for Dev Card. Cost: 1 ORE, 1 WHEAT, 1 SHEEP")
+            a = 1
+            #print("Insufficient Resources for Dev Card. Cost: 1 ORE, 1 WHEAT, 1 SHEEP")
 
     # Function to update dev card stack with dev cards drawn from prior turn(前のターンで引いた開発カードを開発カードスタックに反映させる機能)
     def updateDevCards(self):
@@ -345,7 +353,7 @@ class player():
         'Update game state'
         # Check if player can play a devCard this turn(このターンにデブカードをプレイできるかどうかチェックする)
         if(self.devCardPlayedThisTurn):
-            print('Already played 1 Dev Card this turn!')
+            #print('Already played 1 Dev Card this turn!')
             return
 
         # Get a list of all the unique dev cards this player can play(このプレイヤーがプレイできるすべてのユニークな開発カードのリストを取得する)
@@ -355,7 +363,8 @@ class player():
                 devCardsAvailable.append((cardName, cardAmount))
 
         if(devCardsAvailable == []):
-            print("No Development Cards available to play")
+            a = 1
+            #print("No Development Cards available to play")
             return
 
         # Use Keyboard control to play the Dev Card(キーボード操作でデヴューカードを再生する)
@@ -363,7 +372,7 @@ class player():
         for indx, card in enumerate(devCardsAvailable):
             devCard_dict[indx] = card[0]
 
-        print("Development Cards Available to Play", devCard_dict)
+        #print("Development Cards Available to Play", devCard_dict)
 
         devCardNumber = -1
         while (devCardNumber not in devCard_dict.keys()):
@@ -373,7 +382,7 @@ class player():
         devCardPlayed = devCard_dict[devCardNumber]
         self.devCardPlayedThisTurn = True
 
-        print("Playing Dev Card:", devCardPlayed)
+        #print("Playing Dev Card:", devCardPlayed)
         self.devCards[devCardPlayed] -= 1
 
         # Logic for each Dev Card(各デバイスカード用ロジック)
@@ -391,7 +400,7 @@ class player():
         resource_list = ['BRICK', 'WOOD', 'WHEAT', 'SHEEP', 'ORE']
 
         if(devCardPlayed == 'YEAROFPLENTY'):
-            print("Resources available:", resource_list)
+            #print("Resources available:", resource_list)
 
             r1, r2 = "", ""
             while ((r1 not in self.resources.keys()) or (r2 not in self.resources.keys())):
@@ -431,21 +440,21 @@ class player():
         if(r1_port in self.portList and self.resources[r1] >= 2):
             self.resources[r1] -= 2
             self.resources[r2] += 1
-            print("Traded 2 {} for 1 {} using {} Port".format(r1, r2, r1))
+            #print("Traded 2 {} for 1 {} using {} Port".format(r1, r2, r1))
             return
 
         # Check for 3:1 Port(3:1ポートにチェック)
         elif('3:1 PORT' in self.portList and self.resources[r1] >= 3):
             self.resources[r1] -= 3
             self.resources[r2] += 1
-            print("Traded 3 {} for 1 {} using 3:1 Port".format(r1, r2))
+            #print("Traded 3 {} for 1 {} using 3:1 Port".format(r1, r2))
             return
 
         # Check 4:1 port(4:1ポートを確認)
         elif(self.resources[r1] >= 4):
             self.resources[r1] -= 4
             self.resources[r2] += 1
-            print("Traded 4 {} for 1 {}".format(r1, r2))
+            #print("Traded 4 {} for 1 {}".format(r1, r2))
             return
 
         else:
@@ -486,8 +495,8 @@ class player():
             # Select player to trade with - generate list of other players(トレードする相手を選ぶ - 相手のリストを生成する)
             playerNames = [p.name for p in list(game.playerQueue.queue)]
 
-            print("\nInter-Player Trading Menu - Player Names:", playerNames)
-            print("Resource List:", resource_list)
+            # print("\nInter-Player Trading Menu - Player Names:", playerNames)
+            # print("Resource List:", resource_list)
 
             # Disallow trading with self(自己との取引禁止)
             playerToTrade_name = ''
@@ -509,7 +518,7 @@ class player():
                 # Reset if invalid resource is chosen(無効なリソースが選択された場合、リセットされる)
                 if resourceToTrade in self.resources.keys() and self.resources[resourceToTrade] == 0:
                     resourceToTrade = ""
-                    print("Players can only trade resources they already have")
+                    #print("Players can only trade resources they already have")
 
             # Specify quantity to trade(取引数量を指定する)
             resource_traded_amount = 0
@@ -525,8 +534,8 @@ class player():
                 # Reset if invalid resource is chosen(無効なリソースが選択された場合、リセットされる)
                 if resourceToReceive in self.resources.keys() and playerToTrade.resources[resourceToReceive] == 0:
                     resourceToReceive = -""
-                    print("Player {} doesn't have any {} to trade".format(
-                        playerToTrade_name, resourceToReceive))
+                    # print("Player {} doesn't have any {} to trade".format(
+                    #     playerToTrade_name, resourceToReceive))
 
             # Specify quantity to receive(受取数量を指定する)
             resource_received_amount = 0
@@ -542,13 +551,14 @@ class player():
             playerToTrade.resources[resourceToReceive] -= resource_received_amount
             playerToTrade.resources[resourceToTrade] += resource_traded_amount
 
-            print("Player {} successfully traded {} {} for {} {} with player {}".format(self.name, resource_traded_amount, resourceToTrade,
-                                                                                        resource_received_amount, resourceToReceive, playerToTrade_name))
+            # print("Player {} successfully traded {} {} for {} {} with player {}".format(self.name, resource_traded_amount, resourceToTrade,
+            #                                                                             resource_received_amount, resourceToReceive, playerToTrade_name))
 
             return
 
         else:
-            print("Illegal trade_type flag")
+            a = 1
+            #print("Illegal trade_type flag")
             return
 
     # Function to discard cards(カード廃棄機能)

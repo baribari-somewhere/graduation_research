@@ -25,7 +25,7 @@ class Env_Catan(gym.Env):
     ACTION_MAP = np.array(ACTION)
 
     def __init__(self):
-        print("Initializing Settlers of Catan with only AI Players...")
+        #print("Initializing Settlers of Catan with only AI Players...")
         self.board = catanBoard()
 
         # Game State variables(ゲームステート変数)
@@ -72,7 +72,7 @@ class Env_Catan(gym.Env):
         self.action_space = gym.spaces.Discrete(ACTION_NUM)
         self.observation_space = spaces.flatten_space(
             self.OBSERVATION_SPACE())
-        print(self.board.vertex_index_to_pixel_dict)
+        # print(self.board.vertex_index_to_pixel_dict)
 
     # def step(self, action_index: int, board):
 
@@ -84,7 +84,7 @@ class Env_Catan(gym.Env):
         #numTurns = 0
         self.point = 0
 
-        print(f"action_index:{action_index}")
+        # print(f"action_index:{action_index}")
 
         for currPlayer in self.playerQueue.queue:
             if(self.dicerolled == False):
@@ -100,8 +100,8 @@ class Env_Catan(gym.Env):
             # currPlayer.devCardPlayedThisTurn = False
 
             if(currPlayer.name == 'player1' and self.change == False):
-                print("player1 playing...")
-                print(f"self.change = {self.change}")
+                # print("player1 playing...")
+                # print(f"self.change = {self.change}")
 
                 self.action_input(action, currPlayer)
 
@@ -116,19 +116,19 @@ class Env_Catan(gym.Env):
             self.check_longest_road(currPlayer)
             if currPlayer.victoryPoints >= self.maxPoints:
                 if(currPlayer.name == "player1"):
-                    reward += 20
+                    reward += 50
                 Over_Flag = True
                 p_v = currPlayer.name
 
                 p_team = self.check_team(currPlayer)
                 self.gameOver = True
                 self.turnOver = True
-                print("====================================================")
-                print(f"WINNER {currPlayer.name}")
-                print("{} & {} WINS IN {} TURNS!".format(
-                    p_v, p_team, int(self.turn_count)))
-                print(self.diceStats)
-                print("Exiting game in 10 seconds...")
+                # print("====================================================")
+                # print(f"WINNER {currPlayer.name}")
+                # print("{} & {} WINS IN {} TURNS!".format(
+                #     p_v, p_team, int(self.turn_count)))
+                # print(self.diceStats)
+                # print("Exiting game in 10 seconds...")
                 # pygame.time.delay(10000)
 
                 done = True
@@ -166,7 +166,7 @@ class Env_Catan(gym.Env):
         observation = np.append(observation, np.array([road]))
         observation = np.append(observation, np.array([robber_position]))
         observation = np.append(observation, np.array([settle_city]))
-        print(f"reward:{reward}")
+        # print(f"reward:{reward}")
 
         # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
 
@@ -192,15 +192,15 @@ class Env_Catan(gym.Env):
         self.diceStats_list = []
 
         # Only accept 3 and 4 player games（3人および4人用のゲームのみをサポート）
-        while(self.numPlayers not in [3, 4]):
-            try:
-                self.numPlayers = int(
-                    input("Enter Number of Players (3 or 4):"))
-            except:
-                print("Please input a valid number")
+        # while(self.numPlayers not in [3, 4]):
+        #     try:
+        #         self.numPlayers = int(
+        #             input("Enter Number of Players (3 or 4):"))
+        #     except:
+        #         print("Please input a valid number")
 
-        print("Initializing game with {} players...".format(self.numPlayers))
-        print("Note that Player 1 goes first, Player 2 second and so forth.")
+        # print("Initializing game with {} players...".format(self.numPlayers))
+        # print("Note that Player 1 goes first, Player 2 second and so forth.")
 
         # Initialize blank player queue and initial set up of roads + settlements（プレイヤーキューを空白にし、道路と集落を初期設定する）
         self.playerQueue = queue.Queue(self.numPlayers)
@@ -335,9 +335,11 @@ class Env_Catan(gym.Env):
 
         self.count += 1
 
+       #print(f"action: {action}")
+
         # if(self.count > 100):
         #     exit()
-        print(f"action:{action}")
+        # print(f"action:{action}")
         if(self.int_check(action[0])):
             build_position = self.board.vertex_index_to_pixel_dict[int(
                 action[0])]
@@ -352,7 +354,7 @@ class Env_Catan(gym.Env):
 
         elif(len(action[0]) == 1):
             # self.sample(action)
-            print(action[0])
+            # print(action)
             # exit()
             if(action[0] == "d"):
                 Player.draw_devCard(self.board)
@@ -764,8 +766,8 @@ class Env_Catan(gym.Env):
             # self.boardView.displayGameScreen()
             # pygame.time.delay(1000)
 
-            print("Player {} starts with {} resources".format(
-                player_i.name, len(player_i.setupResources)))
+            # print("Player {} starts with {} resources".format(
+            #     player_i.name, len(player_i.setupResources)))
 
             # Initial resource generation（初期資源生成）
             # check each adjacent hex to latest settlement（最新の集落に隣接するヘクスをチェック）
@@ -773,8 +775,8 @@ class Env_Catan(gym.Env):
                 resourceGenerated = self.board.hexTileDict[adjacentHex].resource.type
                 if(resourceGenerated != 'DESERT'):
                     player_i.resources[resourceGenerated] += 1
-                    print("{} collects 1 {} from Settlement".format(
-                        player_i.name, resourceGenerated))
+                    # print("{} collects 1 {} from Settlement".format(
+                    #     player_i.name, resourceGenerated))
 
         # pygame.time.delay(5000)
         self.gameSetup = False
@@ -784,7 +786,7 @@ class Env_Catan(gym.Env):
         dice_1 = np.random.randint(1, 7)
         dice_2 = np.random.randint(1, 7)
         diceRoll = dice_1 + dice_2
-        print("Dice Roll = ", diceRoll, "{", dice_1, dice_2, "}")
+        #print("Dice Roll = ", diceRoll, "{", dice_1, dice_2, "}")
 
         return diceRoll
 
@@ -805,8 +807,8 @@ class Env_Catan(gym.Env):
                         if(adjacentHex in hexResourcesRolled and self.board.hexTileDict[adjacentHex].robber == False):
                             resourceGenerated = self.board.hexTileDict[adjacentHex].resource.type
                             player_i.resources[resourceGenerated] += 1
-                            print("{} collects 1 {} from Settlement".format(
-                                player_i.name, resourceGenerated))
+                            # print("{} collects 1 {} from Settlement".format(
+                            #     player_i.name, resourceGenerated))
 
                 # Check each City the player has（各プレイヤーが持つ都市をチェック）
                 for cityCoord in player_i.buildGraph['CITIES']:
@@ -816,18 +818,18 @@ class Env_Catan(gym.Env):
                         if(adjacentHex in hexResourcesRolled and self.board.hexTileDict[adjacentHex].robber == False):
                             resourceGenerated = self.board.hexTileDict[adjacentHex].resource.type
                             player_i.resources[resourceGenerated] += 2
-                            print("{} collects 2 {} from City".format(
-                                player_i.name, resourceGenerated))
+                            # print("{} collects 2 {} from City".format(
+                            #     player_i.name, resourceGenerated))
 
-                print("Player:{}, Resources:{}, Points: {}".format(
-                    player_i.name, player_i.resources, player_i.victoryPoints))
+                # print("Player:{}, Resources:{}, Points: {}".format(
+                #     player_i.name, player_i.resources, player_i.victoryPoints))
                 #print('Dev Cards:{}'.format(player_i.devCards))
                 #print("RoadsLeft:{}, SettlementsLeft:{}, CitiesLeft:{}".format(player_i.roadsLeft, player_i.settlementsLeft, player_i.citiesLeft))
                 # print('MaxRoadLength:{}, Longest Road:{}\n'.format(
                 #     player_i.maxRoadLength, player_i.longestRoadFlag))
 
         else:
-            print("AI using heuristic robber...")
+            #print("AI using heuristic robber...")
             currentPlayer.heuristic_move_robber(self.board)
 
     # function to check if a player has the longest road - after building latest road（最新の道路を建設した後、最も長い道路を所有しているかどうかをチェックする機能）
@@ -852,8 +854,8 @@ class Env_Catan(gym.Env):
                 player_i.longestRoadFlag = True
                 player_i.victoryPoints += 2
 
-                print("Player {} takes Longest Road {}".format(
-                    player_i.name, prevPlayer))
+                # print("Player {} takes Longest Road {}".format(
+                #     player_i.name, prevPlayer))
 
     # function to check if a player has the largest army - after playing latest knight（あるプレイヤーが最大の軍隊を持っているかどうかをチェックする関数 - 最新の騎士をプレイした後）
     def check_largest_army(self, player_i):
@@ -877,8 +879,8 @@ class Env_Catan(gym.Env):
                 player_i.largestArmyFlag = True
                 player_i.victoryPoints += 2
 
-                print("Player {} takes Largest Army {}".format(
-                    player_i.name, prevPlayer))
+                # print("Player {} takes Largest Army {}".format(
+                #     player_i.name, prevPlayer))
 
     # def build_settlement(self, vCoord, board):
     #     'Update player buildGraph and boardgraph to add a settlement on vertex v'

@@ -38,7 +38,7 @@ class catanBoard(hexTile, Vertex):
         self.total_hexIndex_i = 0
 
         ##INITIALIZE BOARD##
-        print("Initializing Catan Game Board...")
+        #print("Initializing Catan Game Board...")
         # Assign resources numbers randomly（リソース番号をランダムに割り当てる）
         self.resourcesList = self.getRandomResourceList()
 
@@ -53,7 +53,7 @@ class catanBoard(hexTile, Vertex):
             randomIndices = np.random.permutation(
                 [i for i in range(len(self.resourcesList))])
 
-        print("Re-initialized random board {} times".format(reinitializeCount))
+        #print("Re-initialized random board {} times".format(reinitializeCount))
 
         hexIndex_i = 0  # initialize hexIndex at 0（hexIndex を 0 で初期化する）
         # Neighbors are specified in adjacency matrix - hard coded（隣接行列で指定 - ハードコーディングされています）

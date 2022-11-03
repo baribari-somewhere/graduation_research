@@ -22,7 +22,7 @@ class heuristicAIPlayer(player):
         # 勝手につけたしたself.dev
         # self.devCards = {'KNIGHT': 0, 'VP': 0, 'MONOPOLY': 0,
         #                  'ROADBUILDER': 0, 'YEAROFPLENTY': 0}
-        print("Added new AI Player:", self.name)
+        #print("Added new AI Player:", self.name)
 
     # Function to build an initial settlement - just choose random spot for now（初期集落を作る機能 - とりあえずランダムな場所を選んでください）
     def initial_setup(self, board):
@@ -73,7 +73,7 @@ class heuristicAIPlayer(player):
             possibleRoads.keys())[randomEdge][1], board)
 
     def move(self, board):
-        print("AI Player {} playing...".format(self.name))
+        #print("AI Player {} playing...".format(self.name))
         # Trade resources if there are excessive amounts of a particular resource（特定のリソースが過剰にある場合、リソースをトレードする）
         self.trade()
         # Build a settlements, city and few roads（集落、都市、道路を作る）
