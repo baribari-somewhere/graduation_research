@@ -107,6 +107,10 @@ class Env_Catan(gym.Env):
             # currPlayer.updateDevCards()
             # currPlayer.devCardPlayedThisTurn = False
 
+            if(self.turn_count >= 1000):
+                reward -= 50
+                done = True
+
             if(currPlayer.name == 'player1' and self.change == False):
                 # print("player1 playing...")
                 # print(f"self.change = {self.change}")
@@ -115,7 +119,7 @@ class Env_Catan(gym.Env):
 
                 reward = self.point
 
-            elif(self.change == True):
+            if(self.change == True):
                 currPlayer.move(self.board)
                 self.dicerolled = False
                 if(currPlayer.name == "player4"):
@@ -381,8 +385,8 @@ class Env_Catan(gym.Env):
                         if((self.road_position[0], self.road_position[1]) in possibleRoads.keys()):
                             Player.build_road(self.road_position[0],
                                               self.road_position[1], self.board)
-                            self.point += 5
-                            print("road")
+                            self.point += 10
+                            # print("road")
                         # else:
                         #     print("場所無し")
                         self.road_F = False
@@ -399,8 +403,8 @@ class Env_Catan(gym.Env):
                         if(self.build_position in possibleSettlements.keys()):
                             Player.build_settlement(self.build_position,
                                                     self.board)
-                            self.point += 15
-                            print("settlement")
+                            self.point += 25
+                            # print("settlement")
                         self.build_F = False
                 a = 0
             elif(action[0] == "C"):
@@ -411,8 +415,8 @@ class Env_Catan(gym.Env):
                         #print(f"possibleCities: {possibleCities}")
                         if(self.build_position in possibleCities.keys()):
                             Player.build_city(self.build_position, self.board)
-                            self.point += 30
-                            print("City")
+                            self.point += 35
+                            # print("City")
                         self.build_F = False
                         # print("City")
                 a = 0
