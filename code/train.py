@@ -8,10 +8,12 @@ from stable_baselines3.common.evaluation import evaluate_policy
 import time
 
 from board import *
+from constant_board import *
 from gameView import *
 from player import *
 from heuristicAIPlayer import *
 from env_catan import *
+from env_constant_catan import *
 import setting
 import queue
 import numpy as np
@@ -36,7 +38,8 @@ from os import environ
 #     pass
 
 
-env = Env_Catan()
+#env = Env_Catan()
+env = Env_Constant_Catan()
 #env = Monitor(env, log_dir, allow_early_resets=True)
 
 model = DQN("MlpPolicy", env, verbose=1, tensorboard_log="log", device="auto")
@@ -60,7 +63,8 @@ print("finish learning")
 
 print(time_end - time_start)
 
-eval_env = Env_Catan()
+#eval_env = Env_Catan()
+eval_env = Env_Constant_Catan()
 mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 print('Mean reward: {} +/- {}'.format(mean_reward, std_reward))
 

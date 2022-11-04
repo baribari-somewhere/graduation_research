@@ -225,7 +225,7 @@ class catanBoard(hexTile, Vertex):
     # Function to Display Catan Board Info（カタンボード情報表示機能）
 
     def displayBoardInfo(self):
-        for tile in self.hexTileList.values():
+        for tile in self.hexTileDict.values():
             tile.displayHexInfo()
         return None
 

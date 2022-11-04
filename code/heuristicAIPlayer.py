@@ -1,7 +1,8 @@
 # Settlers of Catan
 # Heuristic AI class implementation（ヒューリスティックAIクラスの実装）
 
-from board import *
+#from board import *
+from constant_board import *
 from player import *
 import numpy as np
 

@@ -1,3 +1,4 @@
+import numpy as np
 list1 = []
 list1.append((1, 2, 3))
 
@@ -52,3 +53,13 @@ sample(list1[0])
 
 a = (1, 2)
 print(a[0])
+
+print(np.random.permutation(
+    [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]))
+
+port_pair_list = [[43, 44], [33, 34], [45, 49], [27, 53], [
+    24, 29], [30, 31], [36, 39], [41, 42], [51, 52]]
+randomPortIndices = np.random.permutation(
+    [i for i in range(len(port_pair_list))])
+
+print(randomPortIndices)

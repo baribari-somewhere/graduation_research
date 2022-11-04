@@ -4,13 +4,14 @@ from stable_baselines3 import DQN
 
 
 from env_catan import Env_Catan
-
+from env_constant_catan import Env_Constant_Catan
 import time
 
 import setting
 
 
-env = Env_Catan()
+#env = Env_Catan()
+env = Env_Constant_Catan()
 
 if len(sys.argv) > 1:
 

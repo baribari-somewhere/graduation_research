@@ -17,6 +17,7 @@ class catanGameView():
     def __init__(self, catanBoardObject, catanGameObject):
         self.board = catanBoardObject
         self.game = catanGameObject
+        # self.board.displayBoardInfo()
 
         # #Use pygame to display the board（pygame を使って盤面を表示する）
         self.screen = pygame.display.set_mode(self.board.size)
@@ -40,6 +41,8 @@ class catanGameView():
 
         # Render each hexTile（各HexTileをレンダリングする）
         for hexTile in self.board.hexTileDict.values():
+            # print(
+            #     f"hexTile.resource.type: {hexTile.resource.type} hexTile.resource.num: {hexTile.resource.num}")
             hexTileCorners = polygon_corners(self.board.flat, hexTile.hex)
 
             hexTileColor_rgb = colorDict_RGB[hexTile.resource.type]
