@@ -17,6 +17,8 @@ class player():
         self.victoryPoints = 0
         self.isAI = False
 
+        self.trade_fin = False
+
         self.settlementsLeft = 5
         self.roadsLeft = 15
         self.citiesLeft = 4
@@ -458,7 +460,8 @@ class player():
             return
 
         else:
-            print("Insufficient resource {} to trade with Bank".format(r1))
+            #print("Insufficient resource {} to trade with Bank".format(r1))
+            self.trade_fin = True
             return
 
     # Function to initate a trade - with bank or other players(銀行や他のプレイヤーとの取引を開始する機能)

@@ -87,8 +87,9 @@ class constant_catanBoard(hexTile, Vertex):
         self.updatePorts()  # Add the ports to the graph（グラフにポートを追加する）
 
         # Initialize DevCardStack（DevCardStackの初期化）
-        self.devCardStack = {'KNIGHT': 15, 'VP': 5,
-                             'MONOPOLY': 2, 'ROADBUILDER': 2, 'YEAROFPLENTY': 2}
+        # self.devCardStack = {'KNIGHT': 15, 'VP': 5,
+        #                      'MONOPOLY': 2, 'ROADBUILDER': 2, 'YEAROFPLENTY': 2}
+        self.devCardStack = {'KNIGHT': 15, 'VP': 5, }
 
         #print(f"randomIndices: {randomIndices}")
         # self.displayBoardInfo()

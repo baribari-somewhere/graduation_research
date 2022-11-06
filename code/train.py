@@ -22,20 +22,20 @@ import pygame
 import matplotlib.pyplot as plt
 from os import environ
 
-# DEVICE = "gpu_limited"  # ["cpu", "gpu_limited", "gpu_unlimited"]
+DEVICE = "gpu_limited"  # ["cpu", "gpu_limited", "gpu_unlimited"]
 
 
-# if (DEVICE == "cpu"):
+if (DEVICE == "cpu"):
 
-#     environ["CUDA_VISIBLE_DEVICES"] = "-1"
+    environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-# elif (DEVICE == "gpu_limited"):
+elif (DEVICE == "gpu_limited"):
 
-#     environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+    environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 
-# elif (DEVICE == "gpu_unlimited"):
+elif (DEVICE == "gpu_unlimited"):
 
-#     pass
+    pass
 
 
 #env = Env_Catan()
