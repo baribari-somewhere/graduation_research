@@ -116,7 +116,7 @@ class player():
                 # update the overall boardGraph(boardGraph全体を更新する)
                 board.updateBoardGraph_settlement(vCoord, self)
 
-                #print('{} Built a Settlement'.format(self.name))
+                #print('{} ()Built a Settlement'.format(self.name))
 
                 # Add port to players port list if it is a new port(新しいポートの場合、プレイヤーポートリストにポートを追加する)
                 if((board.boardGraph[vCoord].port != False) and (board.boardGraph[vCoord].port not in self.portList)):

@@ -135,14 +135,14 @@ class Env_Constant_Catan(gym.Env):
                 p_team = self.check_team(currPlayer)
                 self.gameOver = True
                 self.turnOver = True
-                print(self.board.printGraph())
-                print("====================================================")
-                print(f"WINNER {currPlayer.name}")
-                print("{} & {} WINS IN {} TURNS!".format(
-                    p_v, p_team, int(self.turn_count)))
-                print(self.diceStats)
-                print("Exiting game in 10 seconds...")
-                pygame.time.delay(10000)
+                # print(self.board.printGraph())
+                # print("====================================================")
+                # print(f"WINNER {currPlayer.name}")
+                # print("{} & {} WINS IN {} TURNS!".format(
+                #     p_v, p_team, int(self.turn_count)))
+                # print(self.diceStats)
+                # print("Exiting game in 10 seconds...")
+                # pygame.time.delay(10000)
 
                 done = True
 

@@ -164,7 +164,7 @@ class heuristicAIPlayer(player):
         if(self.get_index == False):
             return hexToRob_index, playerToRob_hex
         else:
-            return 0, 0
+            return hex_ind, playerToRob
 
     def heuristic_move_robber(self, board):
         '''Function to control heuristic AI robber

@@ -166,7 +166,7 @@ class myAI(player):
         if(self.get_index == False):
             return hexToRob_index, playerToRob_hex
         else:
-            return 0, 0
+            return hex_ind, playerToRob
 
     # def choose_player_to_rob(self, board):
     #     '''Heuristic function to choose the player with maximum points.

@@ -55,8 +55,8 @@ class constant_catanBoard(hexTile, Vertex):
             randomIndices = np.random.permutation(
                 [i for i in range(len(self.resourcesList))])
         #print(f"randomIndices: {randomIndices}")
-        randomIndices = [11, 16, 12, 18, 0, 17, 9,
-                         6, 15, 5, 10, 14, 7, 8, 13, 2, 1, 3, 4]
+        randomIndices = [1, 4, 10, 6, 3, 15, 14, 11,
+                         13, 2, 18, 7, 16, 8, 17, 9, 12, 0, 5]
 
         #print("Re-initialized random board {} times".format(reinitializeCount))
 
