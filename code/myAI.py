@@ -161,8 +161,50 @@ class myAI(player):
                 hexToRob_index = hex_ind
                 playerToRob_hex = playerToRob
                 maxHexScore = hexScore
+                self.get_index = True
 
-        return hexToRob_index, playerToRob_hex
+        if(self.get_index == False):
+            return hexToRob_index, playerToRob_hex
+        else:
+            return 0, 0
+
+    # def choose_player_to_rob(self, board):
+    #     '''Heuristic function to choose the player with maximum points.
+    #     Choose hex with maximum other players, Avoid blocking own resource
+    #     args: game board object
+    #     returns: hex index and player to rob
+    #     '''
+    #     # Get list of robber spots（強盗スポットリスト入手）
+    #     robberHexDict = board.get_robber_spots()
+
+    #     # Choose a hexTile with maximum adversary settlements（敵の入植地が最大のヘクスタイルを選択する）
+    #     maxHexScore = 0  # Keep only the best hex to rob（最高の呪文だけを奪っておく）
+    #     for hex_ind, hexTile in robberHexDict.items():
+    #         # Extract all 6 vertices of this hexTile（hexTile の 6 個の頂点をすべて抽出する）
+    #         vertexList = polygon_corners(board.flat, hexTile.hex)
+
+    #         hexScore = 0  # Heuristic score for hexTile（hexTileのヒューリスティックスコア）
+    #         playerToRob_VP = 0
+    #         playerToRob = None
+    #         for vertex in vertexList:
+    #             playerAtVertex = board.boardGraph[vertex].state['Player']
+    #             if playerAtVertex == self:
+    #                 hexScore -= self.victoryPoints
+    #             elif playerAtVertex != None:  # There is an adversary on this vertex（この頂点には敵対者が存在する）
+    #                 hexScore += playerAtVertex.visibleVictoryPoints
+    #                 # Find strongest other player at this hex, provided player has resources（このヘクスにいる最強の他プレイヤーを探す(リソースがある場合)）
+    #                 if playerAtVertex.visibleVictoryPoints >= playerToRob_VP and sum(playerAtVertex.resources.values()) > 0:
+    #                     playerToRob_VP = playerAtVertex.visibleVictoryPoints
+    #                     playerToRob = playerAtVertex
+    #             else:
+    #                 pass
+
+    #         if hexScore >= maxHexScore and playerToRob != None:
+    #             hexToRob_index = hex_ind
+    #             playerToRob_hex = playerToRob
+    #             maxHexScore = hexScore
+
+    #     return hexToRob_index, playerToRob_hex
 
     def heuristic_move_robber(self, board):
         '''Function to control heuristic AI robber
@@ -172,10 +214,24 @@ class myAI(player):
         # Get the best hex and player to rob（最高のヘクスとプレイヤーを手に入れて強奪する）
         hex_i, playerRobbed = self.choose_player_to_rob(board)
 
-        # Move the robber（強盗を移動させる）
-        self.move_robber(hex_i, board, playerRobbed)
+        if(self.get_index == True):
+            # Move the robber（強盗を移動させる）
+            self.move_robber(hex_i, board, playerRobbed)
 
         return
+
+    # def heuristic_move_robber(self, board):
+    #     '''Function to control heuristic AI robber
+    #     Calls the choose_player_to_rob and move_robber functions
+    #     args: board object
+    #     '''
+    #     # Get the best hex and player to rob（最高のヘクスとプレイヤーを手に入れて強奪する）
+    #     hex_i, playerRobbed = self.choose_player_to_rob(board)
+
+    #     # Move the robber（強盗を移動させる）
+    #     self.move_robber(hex_i, board, playerRobbed)
+
+    #     return
 
     # def heuristic_play_dev_card(self, board):
     #     '''Heuristic strategies to choose and play a dev card

@@ -20,6 +20,8 @@ class heuristicAIPlayer(player):
         self.resources = {'ORE': 0, 'BRICK': 4,
                           'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
 
+        self.get_index = False
+
         # 勝手につけたしたself.dev
         # self.devCards = {'KNIGHT': 0, 'VP': 0, 'MONOPOLY': 0,
         #                  'ROADBUILDER': 0, 'YEAROFPLENTY': 0}
@@ -157,8 +159,12 @@ class heuristicAIPlayer(player):
                 hexToRob_index = hex_ind
                 playerToRob_hex = playerToRob
                 maxHexScore = hexScore
+                self.get_index = True
 
-        return hexToRob_index, playerToRob_hex
+        if(self.get_index == False):
+            return hexToRob_index, playerToRob_hex
+        else:
+            return 0, 0
 
     def heuristic_move_robber(self, board):
         '''Function to control heuristic AI robber
@@ -168,8 +174,9 @@ class heuristicAIPlayer(player):
         # Get the best hex and player to rob（最高のヘクスとプレイヤーを手に入れて強奪する）
         hex_i, playerRobbed = self.choose_player_to_rob(board)
 
-        # Move the robber（強盗を移動させる）
-        self.move_robber(hex_i, board, playerRobbed)
+        if(self.get_index == True):
+            # Move the robber（強盗を移動させる）
+            self.move_robber(hex_i, board, playerRobbed)
 
         return
 
