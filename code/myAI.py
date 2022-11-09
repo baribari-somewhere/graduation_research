@@ -22,6 +22,7 @@ class myAI(player):
         # Dictionary that keeps track of resource amounts（リソース量を把握する辞書）
         self.resources = {'ORE': 0, 'BRICK': 4,
                           'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
+        self.get_index = False
 
         # 勝手につけたしたself.dev
         # self.devCards = {'KNIGHT': 0, 'VP': 0, 'MONOPOLY': 0,
@@ -69,6 +70,7 @@ class myAI(player):
                 self.setupResources.append(resourceType)
 
         self.build_settlement(vertexToBuild, board)
+        print(f"myAI_vertexToBuild : {vertexToBuild}")
 
         # Build random road（ランダムな道路を作る）
         possibleRoads = board.get_setup_roads(self)
@@ -163,7 +165,8 @@ class myAI(player):
                 maxHexScore = hexScore
                 self.get_index = True
 
-        if(self.get_index == False):
+        if(self.get_index == True):
+            self.get_index = False
             return hexToRob_index, playerToRob_hex
         else:
             return hex_ind, playerToRob

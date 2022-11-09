@@ -21,6 +21,7 @@ class heuristicAIPlayer(player):
                           'WHEAT': 2, 'WOOD': 4, 'SHEEP': 2}
 
         self.get_index = False
+        self.build_dic = {}
 
         # 勝手につけたしたself.dev
         # self.devCards = {'KNIGHT': 0, 'VP': 0, 'MONOPOLY': 0,
@@ -28,6 +29,7 @@ class heuristicAIPlayer(player):
         #print("Added new AI Player:", self.name)
 
     # Function to build an initial settlement - just choose random spot for now（初期集落を作る機能 - とりあえずランダムな場所を選んでください）
+
     def initial_setup(self, board):
         # Build random settlement（ランダムな集落を作る）
         possibleVertices = board.get_setup_settlements(self)
@@ -67,6 +69,7 @@ class heuristicAIPlayer(player):
             if(resourceType not in self.setupResources and resourceType != 'DESERT'):
                 self.setupResources.append(resourceType)
 
+        print(f"vertexToBuild : {vertexToBuild}")
         self.build_settlement(vertexToBuild, board)
 
         # Build random road（ランダムな道路を作る）
@@ -161,7 +164,8 @@ class heuristicAIPlayer(player):
                 maxHexScore = hexScore
                 self.get_index = True
 
-        if(self.get_index == False):
+        if(self.get_index == True):
+            self.get_index = False
             return hexToRob_index, playerToRob_hex
         else:
             return hex_ind, playerToRob
