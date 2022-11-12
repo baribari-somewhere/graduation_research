@@ -69,7 +69,7 @@ class heuristicAIPlayer(player):
             if(resourceType not in self.setupResources and resourceType != 'DESERT'):
                 self.setupResources.append(resourceType)
 
-        print(f"vertexToBuild : {vertexToBuild}")
+        #print(f"vertexToBuild : {vertexToBuild}")
         self.build_settlement(vertexToBuild, board)
 
         # Build random road（ランダムな道路を作る）

@@ -70,7 +70,7 @@ class myAI(player):
                 self.setupResources.append(resourceType)
 
         self.build_settlement(vertexToBuild, board)
-        print(f"myAI_vertexToBuild : {vertexToBuild}")
+        #print(f"myAI_vertexToBuild : {vertexToBuild}")
 
         # Build random road（ランダムな道路を作る）
         possibleRoads = board.get_setup_roads(self)
