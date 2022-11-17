@@ -44,8 +44,9 @@ class player():
         # Dev cards in possession(所持しているデビットカード)
         # List to keep the new dev cards draw - update the main list every turn(新開発カードのドローを維持するためのリスト - メインリストを毎ターン更新する)
         self.newDevCards = []
-        self.devCards = {'KNIGHT': 0, 'VP': 0, 'MONOPOLY': 0,
-                         'ROADBUILDER': 0, 'YEAROFPLENTY': 0}
+        # self.devCards = {'KNIGHT': 0, 'VP': 0, 'MONOPOLY': 0,
+        #                  'ROADBUILDER': 0, 'YEAROFPLENTY': 0}
+        self.devCards = {'KNIGHT': 0, 'VP': 0}
         self.devCardPlayedThisTurn = False
 
         self.visibleVictoryPoints = self.victoryPoints - self.devCards['VP']

@@ -5,6 +5,7 @@ from stable_baselines3 import DQN
 
 from env_catan import Env_Catan
 from env_constant_catan import Env_Constant_Catan
+from env_comb_catan import Env_Comb_Catan
 import time
 
 import setting
@@ -12,6 +13,7 @@ import setting
 
 #env = Env_Catan()
 env = Env_Constant_Catan()
+#env = Env_Comb_Catan()
 
 if len(sys.argv) > 1:
 
@@ -34,7 +36,7 @@ for i in range(1):
 
     for j in range(2000):
 
-        time.sleep(0.001)
+        # time.sleep(0.001)
 
         action, _states = model.predict(obs)
 

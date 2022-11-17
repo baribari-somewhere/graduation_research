@@ -43,6 +43,6 @@ agent = DQNAgent(model=model, nb_actions=nb_actions, memory=memory,
 agent.compile(adam_v2.Adam())
 # 学習を開始
 # 100000ステップ実行
-history = agent.fit(env, nb_steps=500000, visualize=False, verbose=1)
+history = agent.fit(env, nb_steps=700000, visualize=False, verbose=1)
 # 学習した重みをファイルに保存
 agent.save_weights("moving_test.hdf5")

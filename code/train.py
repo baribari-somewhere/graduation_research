@@ -14,6 +14,7 @@ from player import *
 from heuristicAIPlayer import *
 from env_catan import *
 from env_constant_catan import *
+from env_comb_catan import *
 import setting
 import queue
 import numpy as np
@@ -40,6 +41,7 @@ elif (DEVICE == "gpu_unlimited"):
 
 #env = Env_Catan()
 env = Env_Constant_Catan()
+#env = Env_Comb_Catan()
 #env = Monitor(env, log_dir, allow_early_resets=True)
 
 model = DQN("MlpPolicy", env, verbose=1, tensorboard_log="log", device="auto")
@@ -64,7 +66,8 @@ print("finish learning")
 print(time_end - time_start)
 
 #eval_env = Env_Catan()
-eval_env = Env_Constant_Catan()
+#eval_env = Env_Constant_Catan()
+eval_env = Env_Comb_Catan()
 mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 print('Mean reward: {} +/- {}'.format(mean_reward, std_reward))
 

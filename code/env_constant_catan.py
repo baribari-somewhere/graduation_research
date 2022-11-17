@@ -131,7 +131,7 @@ class Env_Constant_Catan(gym.Env):
             self.check_longest_road(currPlayer)
             if currPlayer.victoryPoints >= self.maxPoints:
                 if(currPlayer.name == "player1"):
-                    reward += 200
+                    reward += 500000
                 Over_Flag = True
                 p_v = currPlayer.name
 
@@ -210,9 +210,14 @@ class Env_Constant_Catan(gym.Env):
         observation = np.append(observation, np.array([robber_position]))
         observation = np.append(observation, np.array([settle_city]))
         # print(f"reward:{reward}")
+        # print(f"my_resource: {my_resource}")
+        # print(f"dev_list: {dev_list}")
+        # print(f"road: {road}")
+        # print(f"robber_position: {robber_position}")
+        # print(f"settle_city: {settle_city}")
 
         # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
-
+        # print(observation)
         return observation, reward, done, {}
 
     def reset(self):
@@ -277,7 +282,7 @@ class Env_Constant_Catan(gym.Env):
         road = self.get_road()
 
         observation = np.append(observation, np.array([my_resource]))
-        observation = np.append(observation, np.array([np.zeros(5)]))
+        observation = np.append(observation, np.array([np.zeros(2)]))
         observation = np.append(observation, np.array([road]))
         observation = np.append(observation, np.array([robber_position]))
         observation = np.append(observation, np.array([settle_city]))
@@ -326,8 +331,8 @@ class Env_Constant_Catan(gym.Env):
             # 所持している発展カード（種類,枚数）
             # 0:knight,1:VP,2:MONOPOLY,3:ROADBUILDER,4:YEAROFPLENTY
             "have_develop": spaces.Box(
-                low=np.array(np.zeros(5)),
-                high=np.array(np.full(5, 20)),  # 最大枚数は後で調整
+                low=np.array(np.zeros(2)),
+                high=np.array(np.full(2, 20)),  # 最大枚数は後で調整
                 dtype=np.uint8
             ),
 
@@ -410,7 +415,7 @@ class Env_Constant_Catan(gym.Env):
                         if(self.build_position in possibleSettlements.keys()):
                             Player.build_settlement(self.build_position,
                                                     self.board)
-                            self.point += 25
+                            self.point += 10000
                             # print("settlement")
                         self.build_F = False
                 self.change = True
@@ -424,7 +429,7 @@ class Env_Constant_Catan(gym.Env):
                         #print(f"possibleCities: {possibleCities}")
                         if(self.build_position in possibleCities.keys()):
                             Player.build_city(self.build_position, self.board)
-                            self.point += 35
+                            self.point += 10000
                             # print("City")
                         self.build_F = False
 
@@ -441,7 +446,7 @@ class Env_Constant_Catan(gym.Env):
                     if((self.road_position[0], self.road_position[1]) in possibleRoads.keys()):
                         Player.build_road(self.road_position[0],
                                           self.road_position[1], self.board)
-                        self.point += 10
+                        self.point += 500
                         # print("road")
                         # else:
                         #     print("場所無し")
@@ -457,11 +462,12 @@ class Env_Constant_Catan(gym.Env):
             # exit()
             if(action[1] == "d"):
                 Player.draw_devCard(self.board)
-
+                self.point += 10
                 #self.point += 0.1
                 a = 0
             elif(action[1] == "u"):
                 Player.play_devCard(Player)
+                self.point += 100
                 a = 0
 
             elif(action[1] == "p"):

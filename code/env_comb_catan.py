@@ -21,7 +21,7 @@ from action import ACTION
 import collections
 
 
-class Env_Constant_Catan(gym.Env):
+class Env_Comb_Catan(gym.Env):
     ACTION_MAP = np.array(ACTION)
 
     def __init__(self):
@@ -97,6 +97,7 @@ class Env_Constant_Catan(gym.Env):
         # print(f"action_index:{action_index}")
 
         for currPlayer in self.playerQueue.queue:
+            # print(currPlayer)
             if(self.dicerolled == False):
                 self.turn_count += 1
                 diceNum = self.rollDice()
@@ -113,15 +114,17 @@ class Env_Constant_Catan(gym.Env):
                 reward -= 50
                 done = True
 
-            if((currPlayer.name == 'player1' or currPlayer.name=='player3') and self.change == False):
+            if((currPlayer.name == 'player1' or currPlayer.name == 'player3') and self.change == False):
                 #print("player1 playing...")
                 # print(f"self.change = {self.change}")
+                # print(1)
 
                 self.action_input(action, currPlayer)
 
                 reward = self.point
 
             elif((currPlayer.name == 'player2' or currPlayer.name == 'player4') and self.change == True):
+                # print(2)
                 currPlayer.move(self.board)
                 self.dicerolled = False
                 self.change = False
@@ -144,6 +147,14 @@ class Env_Constant_Catan(gym.Env):
                 # print(self.diceStats)
                 # print("Exiting game in 10 seconds...")
                 # pygame.time.delay(10000)
+
+                if(self.game_count == 1):
+                    f = open('result.txt', 'w')
+                    f.write(f"{currPlayer.name}\n")
+                else:
+                    f = open('result.txt', 'a')
+                    f.write(f"{currPlayer.name}\n")
+                self.game_count += 1
 
                 done = True
 
@@ -183,6 +194,8 @@ class Env_Constant_Catan(gym.Env):
         # print(f"reward:{reward}")
 
         # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
+
+        # print(self.point)
 
         return observation, reward, done, {}
 
@@ -248,7 +261,7 @@ class Env_Constant_Catan(gym.Env):
         road = self.get_road()
 
         observation = np.append(observation, np.array([my_resource]))
-        observation = np.append(observation, np.array([np.zeros(5)]))
+        observation = np.append(observation, np.array([np.zeros(8)]))
         observation = np.append(observation, np.array([road]))
         observation = np.append(observation, np.array([robber_position]))
         observation = np.append(observation, np.array([settle_city]))
@@ -296,9 +309,15 @@ class Env_Constant_Catan(gym.Env):
             ),
             # 所持している発展カード（種類,枚数）
             # 0:knight,1:VP,2:MONOPOLY,3:ROADBUILDER,4:YEAROFPLENTY
+            # "have_develop": spaces.Box(
+            #     low=np.array(np.zeros(5)),
+            #     high=np.array(np.full(5, 20)),  # 最大枚数は後で調整
+            #     dtype=np.uint8
+            # ),
+
             "have_develop": spaces.Box(
-                low=np.array(np.zeros(5)),
-                high=np.array(np.full(5, 20)),  # 最大枚数は後で調整
+                low=np.array(np.zeros(8)),
+                high=np.array(np.full(8, 20)),  # 最大枚数は後で調整
                 dtype=np.uint8
             ),
 
@@ -514,12 +533,21 @@ class Env_Constant_Catan(gym.Env):
 
     #     return dev_list
 
+    # def get_DV(self, currplayer):
+    #     dev_list = np.array([])
+    #     count = 1
+    #     for i in currplayer.devCards.keys():
+    #         dev_list = np.append(dev_list, np.array([currplayer.devCards[i]]))
+
+    #     return dev_list
+
     def get_DV(self, currplayer):
         dev_list = np.array([])
         count = 1
-        for i in currplayer.devCards.keys():
-            dev_list = np.append(dev_list, np.array([currplayer.devCards[i]]))
-
+        for player in self.player_set:
+            for i in player.devCards.keys():
+                dev_list = np.append(
+                    dev_list, np.array([player.devCards[i]]))
         return dev_list
 
     def get_key(self, d, val_search):
@@ -697,7 +725,7 @@ class Env_Constant_Catan(gym.Env):
         self.playerQueue.put(newPlayer)
         self.player_set.append(newPlayer)
 
-        newPlayer = heuristicAIPlayer('player1', 'darkslateblue')
+        newPlayer = heuristicAIPlayer('player2', 'darkslateblue')
         newPlayer.updateAI()
         self.playerQueue.put(newPlayer)
         self.player_set.append(newPlayer)
@@ -707,7 +735,7 @@ class Env_Constant_Catan(gym.Env):
         self.playerQueue.put(newPlayer)
         self.player_set.append(newPlayer)
 
-        newPlayer = heuristicAIPlayer('player1', 'orange1')
+        newPlayer = heuristicAIPlayer('player4', 'orange1')
         newPlayer.updateAI()
         self.playerQueue.put(newPlayer)
         self.player_set.append(newPlayer)
