@@ -15,6 +15,9 @@ from heuristicAIPlayer import *
 from env_catan import *
 from env_constant_catan import *
 from env_comb_catan import *
+from env_player4 import *
+from env_enemy import *
+from env_combi_conti import *
 import setting
 import queue
 import numpy as np
@@ -22,38 +25,67 @@ import sys
 import pygame
 import matplotlib.pyplot as plt
 from os import environ
+environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+# DEVICE = "gpu_limited"  # ["cpu", "gpu_limited", "gpu_unlimited"]
 
-DEVICE = "gpu_limited"  # ["cpu", "gpu_limited", "gpu_unlimited"]
+
+# if (DEVICE == "cpu"):
+
+#     environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+# elif (DEVICE == "gpu_limited"):
+
+#     environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+
+# elif (DEVICE == "gpu_unlimited"):
+
+#     pass
 
 
-if (DEVICE == "cpu"):
+env_num = 5
+if(env_num == 1):
+    env = Env_Constant_Catan()
+    checkpoint_callback = CheckpointCallback(
 
-    environ["CUDA_VISIBLE_DEVICES"] = "-1"
+        save_freq=setting.default_save_freq, save_path="./save_weights_constant/")
+elif(env_num == 2):
+    env = Env_Comb_Catan()
+    checkpoint_callback = CheckpointCallback(
 
-elif (DEVICE == "gpu_limited"):
+        save_freq=setting.default_save_freq, save_path="./save_weights_combi/")
+elif(env_num == 3):
+    env = Env_Constant_Catan_player4()
+    checkpoint_callback = CheckpointCallback(
 
-    environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+        save_freq=setting.default_save_freq, save_path="./save_weights_player4/")
+elif(env_num == 4):
+    env = Env_Enemy()
+    checkpoint_callback = CheckpointCallback(
 
-elif (DEVICE == "gpu_unlimited"):
+        save_freq=setting.default_save_freq, save_path="./save_weights_enemy/")
+elif(env_num == 5):
+    env = Env_Comb_Catan_conti()
+    checkpoint_callback = CheckpointCallback(
 
-    pass
-
+        save_freq=setting.default_save_freq, save_path="./save_weights_halfway/")
 
 #env = Env_Catan()
-env = Env_Constant_Catan()
+#env = Env_Constant_Catan()
 #env = Env_Comb_Catan()
 #env = Monitor(env, log_dir, allow_early_resets=True)
 
-model = DQN("MlpPolicy", env, verbose=1, tensorboard_log="log", device="auto")
+model = DQN("MlpPolicy", env, verbose=1, tensorboard_log="log",
+            learning_rate=0.000025, device="auto")
 
 
 print("start learning")
 
 time_start = time.perf_counter()
 
-checkpoint_callback = CheckpointCallback(
 
-    save_freq=setting.default_save_freq, save_path="./save_weights/")
+# checkpoint_callback = CheckpointCallback(
+
+#     save_freq=setting.default_save_freq, save_path="./save_weights/")
 
 model.learn(total_timesteps=setting.default_total_timesteps,
 
@@ -67,7 +99,8 @@ print(time_end - time_start)
 
 #eval_env = Env_Catan()
 #eval_env = Env_Constant_Catan()
-eval_env = Env_Comb_Catan()
+#eval_env = Env_Comb_Catan()
+eval_env = Env_Constant_Catan_player4()
 mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 print('Mean reward: {} +/- {}'.format(mean_reward, std_reward))
 
@@ -75,4 +108,4 @@ print('Mean reward: {} +/- {}'.format(mean_reward, std_reward))
 del model
 
 
-# ログを見るやつ　　tensorboard --logdir log
+# ログを見るやつ　　tensorboard --logdir log --port=6008

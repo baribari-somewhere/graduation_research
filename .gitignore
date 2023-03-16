@@ -1,0 +1,6 @@
+__pycache__/
+weights/
+log/
+images/
+result_text/
+*.so

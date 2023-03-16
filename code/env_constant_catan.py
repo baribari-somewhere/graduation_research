@@ -83,6 +83,7 @@ class Env_Constant_Catan(gym.Env):
     # def step(self, action_index: int, board):
 
     def step(self, action_index: int):
+        print(1)
 
         action = self.ACTION_MAP[action_index]
         done = False
@@ -98,14 +99,23 @@ class Env_Constant_Catan(gym.Env):
         # print(f"action_index:{action_index}")
 
         for currPlayer in self.playerQueue.queue:
-            if(self.dicerolled == False):
-                self.turn_count += 1
-                diceNum = self.rollDice()
-                diceRolled = True
-                self.update_playerResources(diceNum, currPlayer)
-                self.diceStats[diceNum] += 1
-                self.diceStats_list.append(diceNum)
-                self.dicerolled = True
+            # if(self.dicerolled == False):
+            #     self.turn_count += 1
+            #     diceNum = self.rollDice()
+            #     diceRolled = True
+            #     self.update_playerResources(diceNum, currPlayer)
+            #     self.diceStats[diceNum] += 1
+            #     self.diceStats_list.append(diceNum)
+            #     self.dicerolled = True
+
+            
+            self.turn_count += 1
+            diceNum = self.rollDice()
+            diceRolled = True
+            self.update_playerResources(diceNum, currPlayer)
+            self.diceStats[diceNum] += 1
+            self.diceStats_list.append(diceNum)
+            self.dicerolled = True
 
             # currPlayer.updateDevCards()
             # currPlayer.devCardPlayedThisTurn = False
@@ -117,12 +127,15 @@ class Env_Constant_Catan(gym.Env):
             if(currPlayer.name == 'player1' and self.change == False):
                 #print("player1 playing...")
                 # print(f"self.change = {self.change}")
+                print(f"victoryPoints:{currPlayer.victoryPoints}")
 
                 self.action_input(action, currPlayer)
 
                 reward = self.point
+                # print(reward)
 
-            if(self.change == True):
+            elif(self.change == True):
+                # print(currPlayer.name)
                 currPlayer.move(self.board)
                 self.dicerolled = False
                 if(currPlayer.name == "player4"):
@@ -130,6 +143,7 @@ class Env_Constant_Catan(gym.Env):
 
             self.check_longest_road(currPlayer)
             if currPlayer.victoryPoints >= self.maxPoints:
+                print(currPlayer.name)
                 if(currPlayer.name == "player1"):
                     reward += 500000
                 Over_Flag = True
@@ -186,7 +200,7 @@ class Env_Constant_Catan(gym.Env):
             self.board.resourcesList)
 
         # 発展カード
-        dev_list = self.get_DV(currPlayer)
+        dev_list = self.get_DV()
 
         # 盗賊がどこにいるか
         robber_position = self.board.get_robber()
@@ -282,7 +296,7 @@ class Env_Constant_Catan(gym.Env):
         road = self.get_road()
 
         observation = np.append(observation, np.array([my_resource]))
-        observation = np.append(observation, np.array([np.zeros(2)]))
+        observation = np.append(observation, np.array([np.zeros(8)]))
         observation = np.append(observation, np.array([road]))
         observation = np.append(observation, np.array([robber_position]))
         observation = np.append(observation, np.array([settle_city]))
@@ -331,8 +345,8 @@ class Env_Constant_Catan(gym.Env):
             # 所持している発展カード（種類,枚数）
             # 0:knight,1:VP,2:MONOPOLY,3:ROADBUILDER,4:YEAROFPLENTY
             "have_develop": spaces.Box(
-                low=np.array(np.zeros(2)),
-                high=np.array(np.full(2, 20)),  # 最大枚数は後で調整
+                low=np.array(np.zeros(8)),
+                high=np.array(np.full(8, 20)),  # 最大枚数は後で調整
                 dtype=np.uint8
             ),
 
@@ -647,12 +661,20 @@ class Env_Constant_Catan(gym.Env):
 
     #     return dev_list
 
-    def get_DV(self, currplayer):
-        dev_list = np.array([])
-        count = 1
-        for i in currplayer.devCards.keys():
-            dev_list = np.append(dev_list, np.array([currplayer.devCards[i]]))
+    # def get_DV(self, currplayer):
+    #     dev_list = np.array([])
+    #     count = 1
+    #     for i in currplayer.devCards.keys():
+    #         dev_list = np.append(dev_list, np.array([currplayer.devCards[i]]))
 
+    #     return dev_list
+    
+    def get_DV(self):
+        dev_list = np.array([])
+        for player_i in self.player_set:
+            for i in player_i.devCards.keys():
+                dev_list = np.append(
+                    dev_list, np.array([player_i.devCards[i]]))
         return dev_list
 
     def get_key(self, d, val_search):

@@ -20,6 +20,6 @@ HEIGHT_DIFF = HEIGHT - 2 * RADIUS
 
 # default study step
 
-default_save_freq = 10000000
+default_save_freq = 500000
 
-default_total_timesteps = 50000000
+default_total_timesteps = 500000000

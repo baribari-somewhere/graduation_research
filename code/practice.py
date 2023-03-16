@@ -62,5 +62,61 @@ port_pair_list = [[43, 44], [33, 34], [45, 49], [27, 53], [
 randomPortIndices = np.random.permutation(
     [i for i in range(len(port_pair_list))])
 
-print(randomPortIndices)
-print(len("Rp"))
+# print(randomPortIndices)
+# print(len("Rp"))
+
+def get_stage():
+        stage = []
+        a = ""
+        f = open('stage_info.txt', 'r', encoding='UTF-8-sig')
+        data = f.read().split("\n")
+        skip = False
+        for i in data:
+            list_all = []
+            list1 = []
+            list2 = []
+            count = 1
+            # print(i)
+            for j in i:
+                # print(j)
+                if(j.isdecimal() == True and skip == False):
+                    # print(1)
+                    a += j
+                elif(skip == True):
+                    skip = False
+                # elif(j == ','):
+                    # print(3)
+                elif(j == "," and count == 1):
+                    list_all.append([int(a)])
+                    # print(2)
+                    a = ""
+                    count += 1
+                elif(j == "."):
+                    skip = True
+                elif(j == "," and 1 < count and count <= 72):
+                    list1.append(int(a))
+                    a = ""
+                    count += 1
+                elif(j == "," and count == 73):
+                    list1.append(int(a))
+                    list_all.append(list1)
+                    a = ""
+                    count += 1
+                elif(j == "," and 73 < count and count <= 126):
+                    list2.append(int(a))
+                    a = ""
+                    count += 1
+                elif(count == 127):
+                    # print(111111111111111111111111111111111111111111111)
+                    # list2.append(int(a))
+                    list_all.append(list2)
+                    a = ""
+                    count += 1
+            # print(list2)
+            stage.append(list_all)
+        return stage
+    
+stage=get_stage()
+print(stage[1])
+print(stage[1][1])
+print(stage[1][2])

@@ -374,6 +374,14 @@ class constant_catanBoard(hexTile, Vertex):
 
         # Remove settlement from player's buildGraph（プレイヤーのbuildGraphから集落を削除する）
         player.buildGraph['SETTLEMENTS'].remove(v_coord)
+    
+    def updateBoardGraph_city_test(self, v_coord, player):
+        self.boardGraph[v_coord].state['Player'] = player
+        self.boardGraph[v_coord].state['Settlement'] = False
+        self.boardGraph[v_coord].state['City'] = True
+
+        # Remove settlement from player's buildGraph（プレイヤーのbuildGraphから集落を削除する）
+        # player.buildGraph['SETTLEMENTS'].remove(v_coord)
 
     # Function to update boardGraph with Robber on hexTile（hexTile上のRobberでboardGraphを更新する関数です）
     def updateBoardGraph_robber(self, hexIndex):

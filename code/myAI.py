@@ -3,7 +3,7 @@
 
 # from board import *
 from constant_board import *
-from player import *
+from player_test import *
 import numpy as np
 
 # Class definition for an AI player（AIプレーヤーのクラス定義）

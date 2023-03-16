@@ -1,4 +1,4 @@
-path = 'result.txt'
+path = './result.txt'
 
 with open(path) as f:
     lines = f.readlines()

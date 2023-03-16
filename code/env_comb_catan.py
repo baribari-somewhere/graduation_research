@@ -132,7 +132,7 @@ class Env_Comb_Catan(gym.Env):
             self.check_longest_road(currPlayer)
             if currPlayer.victoryPoints >= self.maxPoints:
                 if(currPlayer.name == "player1" or currPlayer.name == "player3"):
-                    reward += 200
+                    reward += 500000
                 Over_Flag = True
                 p_v = currPlayer.name
 
@@ -149,10 +149,10 @@ class Env_Comb_Catan(gym.Env):
                 # pygame.time.delay(10000)
 
                 if(self.game_count == 1):
-                    f = open('result.txt', 'w')
+                    f = open('result_combi.txt', 'w')
                     f.write(f"{currPlayer.name}\n")
                 else:
-                    f = open('result.txt', 'a')
+                    f = open('result_combi.txt', 'a')
                     f.write(f"{currPlayer.name}\n")
                 self.game_count += 1
 
@@ -196,6 +196,8 @@ class Env_Comb_Catan(gym.Env):
         # observation→observation_spaceに対応する値をnp.arrayの型で返却する※observation_spaceは辞書順(アルファベット順)で並んでいるので注意
 
         # print(self.point)
+        #print(reward)
+        
 
         return observation, reward, done, {}
 
@@ -400,7 +402,7 @@ class Env_Comb_Catan(gym.Env):
                         if(self.build_position in possibleSettlements.keys()):
                             Player.build_settlement(self.build_position,
                                                     self.board)
-                            self.point += 25
+                            self.point += 10000
                             # print("settlement")
                         self.build_F = False
                 self.change = True
@@ -414,7 +416,7 @@ class Env_Comb_Catan(gym.Env):
                         #print(f"possibleCities: {possibleCities}")
                         if(self.build_position in possibleCities.keys()):
                             Player.build_city(self.build_position, self.board)
-                            self.point += 35
+                            self.point += 10000
                             # print("City")
                         self.build_F = False
 
@@ -431,7 +433,7 @@ class Env_Comb_Catan(gym.Env):
                     if((self.road_position[0], self.road_position[1]) in possibleRoads.keys()):
                         Player.build_road(self.road_position[0],
                                           self.road_position[1], self.board)
-                        self.point += 10
+                        self.point += 500
                         # print("road")
                         # else:
                         #     print("場所無し")
@@ -447,11 +449,13 @@ class Env_Comb_Catan(gym.Env):
             # exit()
             if(action[1] == "d"):
                 Player.draw_devCard(self.board)
+                self.point+=10
 
                 #self.point += 0.1
                 a = 0
             elif(action[1] == "u"):
                 Player.play_devCard(Player)
+                self.point+=100
                 a = 0
 
             elif(action[1] == "p"):

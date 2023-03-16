@@ -6,7 +6,7 @@ from hexTile import *
 from hexLib import *
 import sys
 
-pygame.init()
+#pygame.init()
 
 # Class to handle catan board display（カタンボードディスプレイを扱うクラス）
 

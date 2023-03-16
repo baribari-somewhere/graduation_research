@@ -40,9 +40,9 @@ agent = DQNAgent(model=model, nb_actions=nb_actions, memory=memory,
                  nb_steps_warmup=10, target_model_update=1e-2, policy=policy)
 # DQNAgentのコンパイル
 # 最適化はAdam,評価関数はMAEを使用
-agent.compile(adam_v2.Adam())
+agent.compile(adam_v2.Adam(lr=0.0005))
 # 学習を開始
 # 100000ステップ実行
-history = agent.fit(env, nb_steps=700000, visualize=False, verbose=1)
+history = agent.fit(env, nb_steps=50000000, visualize=False, verbose=1)
 # 学習した重みをファイルに保存
 agent.save_weights("moving_test.hdf5")
